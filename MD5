@@ -1,0 +1,14 @@
+6a8924b4223354b882eefc47c09173e7 *DESCRIPTION
+65ef88e17ae8b28a651d1153e550ed2b *NAMESPACE
+1648b1a77db33e386538eed98260e104 *R/dataset.R
+327fd4f5545b28934bacbd6da096a79b *R/helper.R
+ef540987fb57a9230011188abfc3d457 *R/xtdml_data.R
+d6395741505bbc9a3d32ac966d8e9654 *R/xtdml_main.R
+974f495bc11f2319d94c86fad0d31b0e *R/xtdml_plr.R
+3bf072e28bdcfd21e1e61f3c601b2bf7 *R/zzz.R
+a9a262b651dd480fc1bea1c451686505 *README.md
+8e5e040ad4a355ea16f9a7a6a7623a0a *man/make_plpr_data.Rd
+917d5962ea0d3eaa7cfa5defd7d029ef *man/xtdml.Rd
+535dbcfc8bdf8c29fbceef4de6def1ae *man/xtdml_data.Rd
+336e8751ba2f3c613d14b399df02ff57 *man/xtdml_data_from_data_frame.Rd
+4c7575588eddd3f25a77e8066c5b4b45 *man/xtdml_plr.Rd
