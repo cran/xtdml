@@ -2,14 +2,14 @@ Package: xtdml
 Type: Package
 Title: Double Machine Learning for Static Panel Models with Fixed
         Effects
-Version: 0.1.5
-Date: 2025-08-27
+Version: 0.1.6
+Date: 2025-10-06
 Authors@R: 
     person("Annalivia", "Polselli",  role = c("aut", "cre"),
     email = "apolselli.econ@gmail.com", 
     comment = c(ORCID = "0009-0002-7579-7926"))
 Maintainer: Annalivia Polselli <apolselli.econ@gmail.com>
-Description: Implementation of partially linear panel regression (PLPR) models with high-dimensional confounding variables and exogenous treatment variable within the double machine learning framework. It allows the estimation of the structural parameter (treatment effect) in static panel data models with fixed effects using panel data approaches established in Clarke and Polselli (2025) <doi:10.1093/ectj/utaf011>. 'xtdml' is built on the object-oriented 'DoubleML' (Bach et al., 2024) <doi:10.18637/jss.v108.i03> using the 'mlr3' ecosystem.
+Description: The 'xtdml' package implements partially linear panel regression (PLPR) models with high-dimensional confounding variables and an exogenous treatment variable within the double machine learning framework. The package is used to estimate the structural parameter (treatment effect) in static panel data models with fixed effects using the approaches established in Clarke and Polselli (2025) <doi:10.1093/ectj/utaf011>. 'xtdml' is built on the object-oriented package 'DoubleML' (Bach et al., 2024) <doi:10.18637/jss.v108.i03> using the 'mlr3' ecosystem.
 License: GPL-2 | GPL-3
 Encoding: UTF-8
 Depends: R (>= 3.5.0)
@@ -20,8 +20,8 @@ Imports: R6 (>= 2.4.1), data.table (>= 1.12.8), mlr3 (>= 0.5.0),
 RoxygenNote: 7.3.2
 Suggests: rpart, mlr3pipelines
 NeedsCompilation: no
-Packaged: 2025-09-02 16:45:19 UTC; annal
+Packaged: 2025-10-08 09:56:51 UTC; annal
 Author: Annalivia Polselli [aut, cre] (ORCID:
     <https://orcid.org/0009-0002-7579-7926>)
 Repository: CRAN
-Date/Publication: 2025-09-08 19:00:02 UTC
+Date/Publication: 2025-10-08 10:10:02 UTC

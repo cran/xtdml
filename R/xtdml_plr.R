@@ -288,6 +288,8 @@ xtdml_plr <- R6Class("xtdml_plr",
     #' library(mlr3misc)
     #' library(mlr3tuning)
     #'
+    #' set.seed(1234)
+    #'
     #' # Generate simulated dataset
     #' data = make_plpr_data(n_obs = 100, t_per = 5, dim_x = 10, theta = 0.5, rho=0.8)
     #'
