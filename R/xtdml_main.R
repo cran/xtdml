@@ -3,13 +3,15 @@
 #' @description
 #' Abstract base class that cannot be initialized.
 #'
-#' Implementation of partially linear panel regression (PLPR) models with high-dimensional
-#' confounding variables and exogenous treatment variable within the double machine learning
-#' framework. It allows the estimation of the structural parameter (treatment effect)
-#' in static panel data models with fixed effects using panel data approaches established in
-#' [Clarke and Polselli (2025)](https://academic.oup.com/ectj/advance-article/doi/10.1093/ectj/utaf011/8120202).
-#' `xtdml` is built on the object-oriented `DoubleML` ([Bach et al., 2024](https://www.jstatsoft.org/article/view/v108i03))
-#' using the `mlr3` ecosystem.
+#' `xtdml` estimates the structural parameter (treatment effect)
+#'  in partially linear panel regression models with fixed effects
+#'  using double machine learning  (Clarke and Polselli, 2025).
+#'  `xtdml` allows the estimation of the nuisance functions in the model by machine
+#'  learning methods based on the panel data approach chosen by the user,
+#'  and computation of the Neyman-orthogonal score functions.
+#'
+#' `xtdml` builds on the object-oriented architecture of `DoubleML` (Bach et al., 2024), using
+#' the 'mlr3' ecosystem and the 'R6' package. `xtdml` follows most of the notation of `DoubleML`.
 #'
 #' @importFrom R6 R6Class
 #'
@@ -362,9 +364,9 @@ xtdml <- R6Class("xtdml",
 
       if (self$data$n_cluster_vars == 1 || self$data$n_cluster_vars == 2) {
         cluster_info = paste0(
-          "Cluster variables: ",
-          paste0(self$data$cluster_cols, collapse = ", "),
-          "\n")
+          "Panel identifier: ", paste0(self$data$panel_id, collapse = ", "), "\n",
+          "Time identifier: ", paste0(self$data$time_id, collapse = ", "), "\n",
+          "Cluster variable(s): ", paste0(self$data$cluster_cols, collapse = ", "), "\n")
       } else {
         stop(print("At most two cluster variables allowed"))
       }
@@ -564,69 +566,64 @@ xtdml <- R6Class("xtdml",
     },
 
     #' @description
-    #' Hyperparameter-tuning for DML models with FE.
+    #' Hyperparameter tuning for Double Machine Learning (DML) models with fixed effects.
     #'
-    #' The hyperparameter-tuning is performed using the tuning methods provided
-    #' in the [mlr3tuning](https://mlr3tuning.mlr-org.com/) package. For more
-    #' information on tuning in [mlr3](https://mlr3.mlr-org.com/), we refer to
-    #' the section on parameter tuning in the
+    #' The hyperparameter tuning is performed using the tuning methods provided
+    #' in the [mlr3tuning](https://mlr3tuning.mlr-org.com/) package.
+    #' For more information on tuning in [mlr3](https://mlr3.mlr-org.com/),
+    #' see the chapter on hyperparameter optimization in the
     #' [mlr3 book](https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html).
     #'
     #' @param param_set (named `list()`) \cr
     #' A named `list` with a parameter grid for each nuisance model/learner
-    #' (see method `learner_names()`). The parameter grid must be an object of
-    #' class [ParamSet][paradox::ParamSet].
+    #' (see method `learner_names()`).
+    #' Each element must be a [ParamSet][paradox::ParamSet] object.
     #'
     #' @param tune_settings (named `list()`) \cr
-    #' A named `list()` with arguments passed to the hyperparameter-tuning with
-    #' [mlr3tuning](https://mlr3tuning.mlr-org.com/) to set up
-    #' [TuningInstance][mlr3tuning::TuningInstanceSingleCrit] objects.
-    #' `tune_settings` has entries
-    #' * `terminator` ([Terminator][bbotk::Terminator]) \cr
-    #' A [Terminator][bbotk::Terminator] object. Specification of `terminator`
-    #' is required to perform tuning.
-    #' * `algorithm` ([Tuner][mlr3tuning::Tuner] or `character(1)`) \cr
-    #' A [Tuner][mlr3tuning::Tuner] object (recommended) or key passed to the
-    #' respective dictionary to specify the tuning algorithm used in
-    #' [tnr()][mlr3tuning::tnr()]. `algorithm` is passed as an argument to
-    #' [tnr()][mlr3tuning::tnr()]. If `algorithm` is not specified by the users,
-    #' default is set to `"grid_search"`. If set to `"grid_search"`, then
-    #' additional argument `"resolution"` is required.
-    #' * `rsmp_tune` ([Resampling][mlr3::Resampling] or `character(1)`)\cr
-    #' A [Resampling][mlr3::Resampling] object (recommended) or option passed
-    #' to [rsmp()][mlr3::mlr_sugar] to initialize a
-    #' [Resampling][mlr3::Resampling] for parameter tuning in `mlr3`.
-    #' If not specified by the user, default is set to `"cv"`
-    #' (cross-validation).
-    #' * `n_folds_tune` (`integer(1)`, optional) \cr
-    #' If `rsmp_tune = "cv"`, number of folds used for cross-validation.
-    #' If not specified by the user, default is set to `5`.
-    #' * `measure` (`NULL`, named `list()`, optional) \cr
-    #' Named list containing the measures used for parameter tuning. Entries in
-    #' list must either be [Measure][mlr3::Measure] objects or keys to be
-    #' passed to passed to [msr()][mlr3::msr()]. The names of the entries must
-    #' match the learner names (see method `learner_names()`). If set to `NULL`,
-    #' default measures are used, i.e., `"regr.mse"` for continuous outcome
-    #' variables and `"classif.ce"` for binary outcomes.
-    #' * `resolution` (`character(1)`) \cr The key passed to the respective
-    #' dictionary to specify  the tuning algorithm used in
-    #' [tnr()][mlr3tuning::tnr()]. `resolution` is passed as an argument to
-    #' [tnr()][mlr3tuning::tnr()].
+    #' A named `list()` of settings controlling the hyperparameter tuning process.
+    #' Each entry is passed to the corresponding components from
+    #' [mlr3tuning](https://mlr3tuning.mlr-org.com/):
+    #' * `terminator` (`[bbotk::Terminator]`) \cr
+    #'   A [Terminator][bbotk::Terminator] object specifying when the tuning
+    #'   process should stop (e.g., `trm("evals", n_evals = 20)`).
+    #' * `tuner` — a [Tuner][mlr3tuning::Tuner] object created with
+    #'   [tnr()][mlr3tuning::tnr()], which defines the optimization algorithm.
+    #'   (e.g., `tnr("grid_search")` or `tnr("random_search")`).
+    #'   If set to `"grid_search"`, then additional argument `"resolution"` is required.
+    #' * `rsmp_tune` — a [Resampling][mlr3::Resampling] object or a key passed to
+    #'   [rsmp()][mlr3::rsmp()].
+    #'   Defines the resampling strategy used during tuning (default: `"cv"`).
+    #' * `n_folds_tune` — an integer scalar (optional).
+    #'   Number of folds used if `rsmp_tune = "cv"`. Default is `5`.
+    #' * `measure` — a named `list()` (optional).
+    #'   Contains the performance measures used for tuning.
+    #'   Each element must be either a [Measure][mlr3::Measure] object or a key to
+    #'   [msr()][mlr3::msr()].
+    #'   Names must match the learner names (see `learner_names()`).
+    #'   If omitted, default measures are used (`"regr.rmse"` for regression and
+    #'   `"classif.ce"` for classification).
     #'
     #' @param tune_on_folds (`logical(1)`) \cr
-    #' Indicates whether the tuning should be done fold-specific or globally.
-    #' Default is `FALSE`.
+    #' Indicates whether the tuning should be performed separately for each
+    #' cross-fitting fold (`TRUE`) or globally across all folds (`FALSE`, default).
+    #'
+    #' @examples
+    #' tune_settings = list(
+    #'   n_folds_tune = 5,
+    #'   rsmp_tune = mlr3::rsmp("cv", folds = 5),
+    #'   terminator = mlr3tuning::trm("evals", n_evals = 20),
+    #'   tuner = mlr3tuning::tnr("grid_search", resolution = 10))
     #'
     #' @return self
     tune = function(param_set,
-      tune_settings = list(
-        n_folds_tune = 5,
-        rsmp_tune = mlr3::rsmp("cv", folds = 5),
-        measure = NULL,
-        terminator = mlr3tuning::trm("evals", n_evals = 20),
-        algorithm = mlr3tuning::tnr("grid_search"),
-        resolution = 5),
-      tune_on_folds = FALSE) {
+                    tune_settings = list(
+                      n_folds_tune = 5,
+                      rsmp_tune = mlr3::rsmp("cv", folds = 5),
+                      measure = NULL,
+                      terminator = mlr3tuning::trm("evals", n_evals = 20),
+                      tuner = mlr3tuning::tnr("grid_search", resolution = 10)
+                    ),
+                    tune_on_folds = FALSE) {
 
         assert_list(param_set)
         valid_learner = self$learner_names()
@@ -1117,28 +1114,12 @@ xtdml <- R6Class("xtdml",
         }
       }
 
-      if (!test_names(names(tune_settings), must.include = "algorithm")) {
-        tune_settings$algorithm = "grid_search"
+      # --- NEW: tuner (modern API) ---
+      if (!test_names(names(tune_settings), must.include = "tuner")) {
+        # default: grid search with 5 resolution steps
+        tune_settings$tuner = mlr3tuning::tnr("grid_search", resolution = 5)
       } else {
-        assert(
-          check_character(tune_settings$algorithm, len = 1),
-          check_class(tune_settings$algorithm, "Tuner"))
-      }
-
-      if (test_character(tune_settings$algorithm)) {
-        if (tune_settings$algorithm == "grid_search") {
-          if (is.null(tune_settings$resolution)) {
-            stop(paste(
-              "Invalid tune_settings\n",
-              "object 'resolution' is missing."))
-          } else {
-            assert_count(tune_settings$resolution, positive = TRUE)
-          }
-          tune_settings$tuner = tnr(tune_settings$algorithm,
-            resolution = tune_settings$resolution)
-        }
-      } else {
-        tune_settings$tuner = tune_settings$algorithm
+        assert_class(tune_settings$tuner, "Tuner")
       }
 
       return(tune_settings)

@@ -12,62 +12,29 @@ Routine to estimate partially linear panel regression models with fixed effects 
 \details{
 Consider partially linear panel regression (PLR) model of form
 
-\eqn{ Y_{it} = \theta_0 D_{it} + g_0(x_{it}) + \alpha_i + U_{it} (1)}
+\eqn{ Y_{it} = \theta_0 D_{it} + g_0(x_{it}) + \alpha_i + U_{it}}
 
-\eqn{ D_{it} = m_0(x_{it}) + \gamma_i + V_{it}  (2)}
+\eqn{ D_{it} = m_0(x_{it}) + \gamma_i + V_{it}}
 
 where (1) is the outcome equation and (2) is the treatment equation.
 }
 \examples{
-
 # An illustrative example using a regression tree (`rpart`)
 library(mlr3)
 library(rpart)
 
-set.seed(1234)
-
 # Generate simulated dataset
-data = make_plpr_data(n_obs = 100, t_per = 5, dim_x = 10, theta = 0.5, rho=0.8)
+data = make_plpr_data(n_obs = 500, t_per = 10, dim_x = 30, theta = 0.5, rho=0.8)
 
-x_cols  = paste0("X", 1:10)
+x_cols  = paste0("X", 1:30)
 
-# Set up DML data environment
 obj_xtdml_data = xtdml_data_from_data_frame(data,
                 x_cols = x_cols,  y_col = "y", d_cols = "d",
-                cluster_cols = "id", approach = "fd-exact")
-
-# Set up DML estimation environment
- learner = lrn("regr.rpart")
- ml_l = learner$clone()
- ml_m = learner$clone()
-
- obj_xtdml = xtdml_plr$new(obj_xtdml_data,
-                           ml_l = ml_l, ml_m = ml_m,
-                           score = "orth-PO", n_folds = 3)
- obj_xtdml$fit()
-
-
-## ------------------------------------------------
-## Method `xtdml_plr$tune`
-## ------------------------------------------------
-
-# Tuning example with `rpart`
-library(mlr3)
-library(rpart)
-library(mlr3misc)
-library(mlr3tuning)
-
-set.seed(1234)
-
-# Generate simulated dataset
-data = make_plpr_data(n_obs = 100, t_per = 5, dim_x = 10, theta = 0.5, rho=0.8)
-
-x_cols  = paste0("X", 1:10)
-
-# Set up DML data environment
-obj_xtdml_data = xtdml_data_from_data_frame(data,
-                x_cols = x_cols,  y_col = "y", d_cols = "d",
-                cluster_cols = "id", approach = "fd-exact")
+                panel_id = "id",
+                time_id = "time",
+                cluster_cols = "id",
+                approach = "fd-exact",
+                transformX = "no")
 
 # Set up DML estimation environment
   learner = lrn("regr.rpart")
@@ -77,22 +44,7 @@ obj_xtdml_data = xtdml_data_from_data_frame(data,
   obj_xtdml = xtdml_plr$new(obj_xtdml_data,
                            ml_l = ml_l, ml_m = ml_m,
                            score = "orth-PO", n_folds = 3)
-# Set up a list of parameter grids
-param_grid = list("ml_l" = ps(cp = p_dbl(lower = 0.01, upper = 0.02),
-                            maxdepth = p_int(lower = 2, upper = 10)),
-                  "ml_m" = ps(cp = p_dbl(lower = 0.01, upper = 0.02),
-                            maxdepth = p_int(lower = 2, upper = 10)))
-
-tune_settings = list(n_folds_tune = 3,
-                   rsmp_tune = mlr3::rsmp("cv", folds = 3),
-                   terminator = mlr3tuning::trm("evals", n_evals = 5),
-                   algorithm = tnr("grid_search"), resolution = 5)
-
-obj_xtdml$tune(param_set = param_grid, tune_settings = tune_settings)
-
-# Estimate target/causal parameter
-obj_xtdml$fit()
-obj_xtdml$print()
+  obj_xtdml$fit()
 
 }
 \seealso{
@@ -281,7 +233,7 @@ the section on parameter tuning in the
   param_set,
   tune_settings = list(n_folds_tune = 5, rsmp_tune = mlr3::rsmp("cv", folds = 5), measure
     = NULL, terminator = mlr3tuning::trm("evals", n_evals = 20), algorithm =
-    mlr3tuning::tnr("grid_search"), resolution = 5),
+    mlr3tuning::tnr("grid_search"), resolution = 10),
   tune_on_folds = FALSE
 )}\if{html}{\out{</div>}}
 }
@@ -295,14 +247,15 @@ A named \code{list} with a parameter grid for each nuisance model/learner
 class \link[paradox:ParamSet]{ParamSet}.}
 
 \item{\code{tune_settings}}{(named \code{list()}) \cr
-A named \code{list()} with arguments passed to the hyperparameter-tuning with
-\href{https://mlr3tuning.mlr-org.com/}{mlr3tuning} to set up
-\link[mlr3tuning:TuningInstanceSingleCrit]{TuningInstance} objects.
-\code{tune_settings} has entries
+A named list of settings that control the hyperparameter tuning
+performed via \href{https://mlr3tuning.mlr-org.com/}{mlr3tuning}.
+These settings are used to construct
+\link[mlr3tuning:TuningInstanceSingleCrit]{TuningInstanceSingleCrit} objects.
+The list can contain the following elements:
 \itemize{
-\item \code{terminator} (\link[bbotk:Terminator]{Terminator}) \cr
-A \link[bbotk:Terminator]{Terminator} object. Specification of \code{terminator}
-is required to perform tuning.
+\item \code{terminator} (\verb{[bbotk::Terminator]}, required) \cr
+A \link[bbotk:Terminator]{Terminator} object specifying when the tuning
+process should stop (e.g., \code{trm("evals", n_evals = 20)}).
 \item \code{algorithm} (\link[mlr3tuning:Tuner]{Tuner} or \code{character(1)}) \cr
 A \link[mlr3tuning:Tuner]{Tuner} object (recommended) or key passed to the
 respective dictionary to specify the tuning algorithm used in
@@ -310,22 +263,21 @@ respective dictionary to specify the tuning algorithm used in
 \link[mlr3tuning:tnr]{tnr()}. If \code{algorithm} is not specified by the users,
 default is set to \code{"grid_search"}. If set to \code{"grid_search"}, then
 additional argument \code{"resolution"} is required.
-\item \code{rsmp_tune} (\link[mlr3:Resampling]{Resampling} or \code{character(1)})\cr
-A \link[mlr3:Resampling]{Resampling} object (recommended) or option passed
-to \link[mlr3:mlr_sugar]{rsmp()} to initialize a
-\link[mlr3:Resampling]{Resampling} for parameter tuning in \code{mlr3}.
-If not specified by the user, default is set to \code{"cv"}
-(cross-validation).
-\item \code{n_folds_tune} (\code{integer(1)}, optional) \cr
-If \code{rsmp_tune = "cv"}, number of folds used for cross-validation.
-If not specified by the user, default is set to \code{5}.
-\item \code{measure} (\code{NULL}, named \code{list()}, optional) \cr
-Named list containing the measures used for parameter tuning. Entries in
-list must either be \link[mlr3:Measure]{Measure} objects or keys to be
-passed to passed to \link[mlr3:mlr_sugar]{msr()}. The names of the entries must
-match the learner names (see method \code{learner_names()}). If set to \code{NULL},
-default measures are used, i.e., \code{"regr.mse"} for continuous outcome
-variables and \code{"classif.ce"} for binary outcomes.
+\item \code{rsmp_tune} (\verb{[mlr3::Resampling]} or \code{character(1)}) \cr
+A resampling strategy used during tuning. Can be given either as a
+\link[mlr3:Resampling]{Resampling} object or a key passed to
+\link[mlr3:mlr_sugar]{rsmp()} (e.g., \code{"cv"} for cross-validation).
+The default is 5-fold cross-validation.
+\item \code{n_folds_tune} (\code{integer(1)}) \cr
+Number of folds to use when \code{rsmp_tune = "cv"}. Default is \code{5}.
+\item \code{measure} (\code{NULL} or named \code{list()}) \cr
+A named list specifying performance measures for each learner.
+Each element must be either a \link[mlr3:Measure]{Measure} object or
+a key passed to \link[mlr3:mlr_sugar]{msr()}.
+The names of the list elements must match the learner names
+(see \code{learner_names()}).
+If \code{NULL}, default measures are used: \code{"regr.mse"} for regression
+and \code{"classif.ce"} for classification.
 \item \code{resolution} (\code{character(1)}) \cr The key passed to the respective
 dictionary to specify  the tuning algorithm used in
 \link[mlr3tuning:tnr]{tnr()}. \code{resolution} is passed as an argument to
@@ -341,56 +293,6 @@ Default is \code{FALSE}.}
 \subsection{Returns}{
 self
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Tuning example with `rpart`
-library(mlr3)
-library(rpart)
-library(mlr3misc)
-library(mlr3tuning)
-
-set.seed(1234)
-
-# Generate simulated dataset
-data = make_plpr_data(n_obs = 100, t_per = 5, dim_x = 10, theta = 0.5, rho=0.8)
-
-x_cols  = paste0("X", 1:10)
-
-# Set up DML data environment
-obj_xtdml_data = xtdml_data_from_data_frame(data,
-                x_cols = x_cols,  y_col = "y", d_cols = "d",
-                cluster_cols = "id", approach = "fd-exact")
-
-# Set up DML estimation environment
-  learner = lrn("regr.rpart")
-  ml_l = learner$clone()
-  ml_m = learner$clone()
-
-  obj_xtdml = xtdml_plr$new(obj_xtdml_data,
-                           ml_l = ml_l, ml_m = ml_m,
-                           score = "orth-PO", n_folds = 3)
-# Set up a list of parameter grids
-param_grid = list("ml_l" = ps(cp = p_dbl(lower = 0.01, upper = 0.02),
-                            maxdepth = p_int(lower = 2, upper = 10)),
-                  "ml_m" = ps(cp = p_dbl(lower = 0.01, upper = 0.02),
-                            maxdepth = p_int(lower = 2, upper = 10)))
-
-tune_settings = list(n_folds_tune = 3,
-                   rsmp_tune = mlr3::rsmp("cv", folds = 3),
-                   terminator = mlr3tuning::trm("evals", n_evals = 5),
-                   algorithm = tnr("grid_search"), resolution = 5)
-
-obj_xtdml$tune(param_set = param_grid, tune_settings = tune_settings)
-
-# Estimate target/causal parameter
-obj_xtdml$fit()
-obj_xtdml$print()
-
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml_plr-clone"></a>}}

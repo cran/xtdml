@@ -147,7 +147,40 @@ xtdml_data = R6Class("xtdml_data",
                            }
                          }
                        },
-
+                       #' @field panel_id (`character()`)\cr
+                       #' The panel identifier.
+                       panel_id = function(value) {
+                         if (missing(value)) {
+                           return(private$panel_id_)
+                         } else {
+                           panel_id = value
+                           reset_value = !is.null(self$data_model)
+                           assert_character(panel_id, unique = TRUE)
+                           assert_subset(panel_id, self$all_variables)
+                           private$panel_id_ = panel_id
+                           if (reset_value) {
+                             private$check_disjoint_sets()
+                             self$set_data_model(self$d_cols[1])
+                           }
+                         }
+                       },
+                       #' @field time_id (`character()`)\cr
+                       #' The time identifier.
+                       time_id = function(value) {
+                         if (missing(value)) {
+                           return(private$time_id_)
+                         } else {
+                           time_id = value
+                           reset_value = !is.null(self$data_model)
+                           assert_character(time_id, unique = TRUE)
+                           assert_subset(time_id, self$all_variables)
+                           private$time_id_ = time_id
+                           if (reset_value) {
+                             private$check_disjoint_sets()
+                             self$set_data_model(self$d_cols[1])
+                           }
+                         }
+                       },
                        #' @field cluster_cols (`character()`)\cr
                        #' The cluster variable(s).
                        cluster_cols = function(value) {
@@ -220,6 +253,15 @@ xtdml_data = R6Class("xtdml_data",
                        #' Individual mean of the treatment variable
                        #' (used for the CRE approach). Default is `NULL`.
                        #'
+                       #' @param panel_id (`character()`) \cr
+                       #' The panel identifier.
+                       #'
+                       #' @param time_id (`character()`) \cr
+                       #' The time identifier.
+                       #'
+                       #' @param cluster_cols (`character()`) \cr
+                       #' The cluster variable(s).
+                       #'
                        #' @param approach (`character(1)`) \cr
                        #' A `character()` (`"fd-exact"`, `"wg-approx"` or `"cre"`)
                        #' specifying the panel data technique to apply
@@ -234,14 +276,13 @@ xtdml_data = R6Class("xtdml_data",
                        #' combinations of two and three variables; this is recommended for Lasso.
                        #' Default is `"no"`.
                        #'
-                       #' @param cluster_cols (`character()`) \cr
-                       #' The cluster variable(s).
-                       #'
                        initialize = function(data = NULL,
                                              x_cols = NULL,
                                              y_col = NULL,
                                              d_cols = NULL,
                                              dbar_col = NULL,
+                                             panel_id = NULL,
+                                             time_id = NULL,
                                              cluster_cols = NULL,
                                              approach = NULL,
                                              transformX = NULL
@@ -256,6 +297,8 @@ xtdml_data = R6Class("xtdml_data",
 
                          private$data_ = data
 
+                         self$panel_id = panel_id
+                         self$time_id = time_id
                          self$cluster_cols = cluster_cols
 
                          self$y_col  = y_col
@@ -280,6 +323,8 @@ xtdml_data = R6Class("xtdml_data",
                          data_info = paste0(
                            "Outcome variable: ", self$y_col, "\n",
                            "Treatment variable(s): ", paste0(self$d_cols, collapse = ", "), "\n",
+                           "Panel identifier: ", paste0(self$panel_id, collapse = ", "), "\n",
+                           "Time identifier: ", paste0(self$time_id, collapse = ", "), "\n",
                            "Cluster variable(s): ", paste0(self$cluster_cols, collapse = ", "),
                            "\n",
                            "Covariates: ", paste0(c(self$x_cols, self$dbar_col), collapse = ", "), "\n",
@@ -296,7 +341,7 @@ xtdml_data = R6Class("xtdml_data",
 
                        #' @description
                        #' Setter function for `data_model`. The function implements the causal model
-                       #' as specified by the user via `y_col`, `d_cols`, `x_cols` and
+                       #' as specified by the user via `y_col`, `d_cols`, `x_cols`, `panel_id`, `time_id` and
                        #' `cluster_cols` and assigns the role for the treatment variables in the
                        #' multiple-treatment case.
                        #' @param treatment_var (`character()`)\cr
@@ -317,6 +362,8 @@ xtdml_data = R6Class("xtdml_data",
                            self$y_col,
                            self$treat_col,
                            self$dbar_col,
+                           self$panel_id,
+                           self$time_id,
                            self$cluster_cols
                          )
                          private$data_model_ = self$data[, col_indx, with = FALSE]
@@ -331,6 +378,8 @@ xtdml_data = R6Class("xtdml_data",
                        y_col_ = NULL,
                        d_cols_ = NULL,
                        dbar_col_ = NULL,
+                       panel_id_ = NULL,
+                       time_id_ = NULL,
                        cluster_cols_ = NULL,
                        treat_col_ = NULL,
                        data_model_ = NULL,
@@ -343,7 +392,8 @@ xtdml_data = R6Class("xtdml_data",
                          x_cols    = self$x_cols
                          d_cols    = self$d_cols
                          dbar_col  = self$dbar_col
-
+                         panel_id = self$panel_id
+                         time_id = self$time_id
                          cluster_cols = self$cluster_cols
                          approach = self$approach
                          transform = self$transform
@@ -359,6 +409,18 @@ xtdml_data = R6Class("xtdml_data",
                              y_col,
                              "cannot be set as outcome variable 'y_col' and",
                              "treatment variable in 'd_cols'."))
+                         }
+                         if (y_col %in% panel_id) {
+                           stop(paste(
+                             y_col,
+                             "cannot be set as outcome variable 'y_col' and",
+                             "cluster variable in 'panel_id'."))
+                         }
+                         if (y_col %in% time_id) {
+                           stop(paste(
+                             y_col,
+                             "cannot be set as outcome variable 'y_col' and",
+                             "cluster variable in 'time_id'."))
                          }
                          if (y_col %in% cluster_cols) {
                            stop(paste(
@@ -382,6 +444,26 @@ xtdml_data = R6Class("xtdml_data",
                              "At least one variable/column is set as covariate ('x_cols')",
                              "and as a cluster variable ('cluster_cols')."))
                          }
+                         if (any(d_cols %in% panel_id)) {
+                           stop(paste(
+                             "At least one variable/column is set as treatment",
+                             "variable ('d_cols') and as a cluster variable ('panel_id')."))
+                         }
+                         if (any(cbind(x_cols) %in% panel_id)) {
+                           stop(paste(
+                             "At least one variable/column is set as covariate ('x_cols')",
+                             "and as a cluster variable ('panel_id')."))
+                         }
+                         if (any(d_cols %in% time_id)) {
+                           stop(paste(
+                             "At least one variable/column is set as treatment",
+                             "variable ('d_cols') and as a cluster variable ('time_id')."))
+                         }
+                         if (any(cbind(x_cols) %in% time_id)) {
+                           stop(paste(
+                             "At least one variable/column is set as covariate ('x_cols')",
+                             "and as a cluster variable ('time_id')."))
+                         }
                        }
                      )
 )
@@ -404,11 +486,17 @@ xtdml_data = R6Class("xtdml_data",
 #' @param x_cols (`character()`) \cr
 #' The covariates.
 #'
+#' @param panel_id (`NULL`, `character()`) \cr
+#' The panel identifier. Default is `NULL`.
+#'
+#' @param time_id (`NULL`, `character()`) \cr
+#' The time identifier. Default is `NULL`.
+#'
 #' @param cluster_cols (`NULL`, `character()`) \cr
-#' The cluster variables. Default is `NULL`.
+#' The cluster variables. Default is `panel_id`.
 #'
 #' @param approach (`character(1)`) \cr
-#' A `character()` (`"fd-exact"`, `"wg-approx"` or `"cre"`) specifying the panel data
+#' A `character()` (`"fd-exact"`, `"wg-approx"`, `"cre"` or `"pooled"`) specifying the panel data
 #' technique to apply to estimate the causal model. Default is `"fd-exact"`.
 #'
 #' @param transformX (`character(1)`) \cr
@@ -432,7 +520,10 @@ xtdml_data = R6Class("xtdml_data",
 #'
 #' obj_xtdml_data = xtdml_data_from_data_frame(data,
 #'                 x_cols = x_cols,  y_col = "y", d_cols = "d",
-#'                 cluster_cols = "id", approach = "fd-exact",
+#'                 panel_id = "id",
+#'                 time_id = "time",
+#'                 cluster_cols = "id",
+#'                 approach = "fd-exact",
 #'                 transformX = "no")
 #'
 #' obj_xtdml_data$print()
@@ -442,16 +533,28 @@ xtdml_data = R6Class("xtdml_data",
 #'
 xtdml_data_from_data_frame = function(df,
                                       x_cols = NULL, y_col = NULL, d_cols = NULL,
-                                      cluster_cols = NULL, approach = NULL, transformX = NULL)
+                                      panel_id = NULL, time_id = NULL, cluster_cols = NULL,
+                                      approach = NULL, transformX = NULL)
 {
-  if (is.null(cluster_cols)) {
-    stop(print("Specify at least one (`cluster_vars`)."))
+  if (is.null(panel_id) ) {
+    stop(print("Specify at least one (`panel_id`)."))
   } else {
 
+    if (is.null(time_id) ) {
+      stop(print("Specify time identifier (`time_id`)."))
+    }
+
+    # sort data
+    df = df[order(df[,panel_id], df[,time_id]), ]
+
+    if (is.null(cluster_cols)) {
+      cluster_cols = panel_id
+    }
+
     if (is.null(approach)){
-      approach = "fd-exact"
+      stop(print("Specify a panel approach among (`fd-exact`, `wg-approx`, `cre`, `pooled`)."))
     } else{
-      valid_approach = c("fd-exact", "wg-approx", "cre")
+      valid_approach = c("fd-exact", "wg-approx", "cre", "pooled")
       assert_choice(approach, valid_approach)
     }
 
@@ -467,7 +570,7 @@ xtdml_data_from_data_frame = function(df,
     if(approach=="cre"){
 
       df.cre = df %>%
-        group_by(across(all_of(cluster_cols))) %>%
+        group_by(across(all_of(panel_id))) %>%
         mutate(across(c(x_cols, d_cols), ~  mean(.x), .names = "m_{col}"))
 
       df.transf = as.data.frame(df.cre)
@@ -479,7 +582,7 @@ xtdml_data_from_data_frame = function(df,
     }else if(approach=="fd-exact"){
 
       df.fd = df %>%
-        group_by(across(all_of(cluster_cols))) %>%
+        group_by(across(all_of(panel_id))) %>%
         mutate(across(x_cols, ~  lag(.x), .names = "L.{col}"))   %>%
         mutate(across(c(d_cols, y_col), ~ c(NA, diff(.x))))  %>%
         ungroup()
@@ -498,8 +601,6 @@ xtdml_data_from_data_frame = function(df,
         stop("The `wg-approx` approach currently supports only one cluster column (e.g., individual ID).")
       }
 
-      cluster_id = cluster_cols[[1]]
-
       df_no_idx = df %>% select(all_of(c(x_cols, y_col, d_cols)))
 
       df_gm = df_no_idx %>%
@@ -507,7 +608,7 @@ xtdml_data_from_data_frame = function(df,
       gm_list = as.list(df_gm)
 
       df_mi = df %>%
-        group_by(across(all_of(cluster_id))) %>%
+        group_by(across(all_of(panel_id))) %>%
         mutate(across(all_of(c(x_cols, y_col, d_cols)), ~ mean(.x, na.rm = TRUE), .names = "m.{col}")) %>%
         ungroup()
 
@@ -520,8 +621,15 @@ xtdml_data_from_data_frame = function(df,
         df_dm[[v]] = df_no_idx[[v]] - individual_mean + grand_mean
       }
 
-      df_dm[[cluster_id]] = df[[cluster_id]]
+      df_dm[[panel_id]] = df[[panel_id]]
+      df_dm[[time_id]] = df[[time_id]]
+      df_dm[[cluster_cols]] = df[[cluster_cols]]
+
       df.transf = as.data.frame(df_dm)
+      x_cols_plus = x_cols
+
+    } else if(approach=="pooled"){
+      df.transf = df
       x_cols_plus = x_cols
     }
 
@@ -530,7 +638,7 @@ xtdml_data_from_data_frame = function(df,
       dta_x = df.transf[, x_cols, drop = FALSE]
       dta2_x = polyexp(dta_x)
 
-      if (approach=="wg-approx"){
+      if (approach=="wg-approx" | approach =="pooled"){
         df_expanded = dta2_x
       }else {
         dta_Lx = df.transf[, Lx_cols, drop = FALSE]
@@ -540,22 +648,21 @@ xtdml_data_from_data_frame = function(df,
 
       df_expanded[[y_col]]         = df.transf[[y_col]]
       df_expanded[[d_cols]]        = df.transf[[d_cols]]
+      df_expanded[[panel_id]]      = df.transf[[panel_id]]
+      df_expanded[[time_id]]       = df.transf[[time_id]]
       df_expanded[[cluster_cols]]  = df.transf[[cluster_cols]]
 
 
       if (approach == "cre"){
         df_expanded[[dbar_col]] = df.transf[[dbar_col]]
-        protected_cols = c(y_col, d_cols, dbar_col, cluster_cols)
+        protected_cols = c(y_col, d_cols, dbar_col, panel_id, time_id, cluster_cols)
       } else{
-        protected_cols = c(y_col, d_cols, cluster_cols)
+        protected_cols = c(y_col, d_cols, panel_id, time_id, cluster_cols)
       }
 
       protected_cols = intersect(protected_cols, colnames(df_expanded))
 
       df2 = df_expanded[, c(protected_cols, setdiff(colnames(df_expanded), protected_cols))]
-
-      # Optional: Replace NAs with 0s (if needed)
-      #df2[is.na(df2)] <- 0
 
       x_cols_plus = setdiff(names(df2), protected_cols)
 
@@ -575,7 +682,7 @@ xtdml_data_from_data_frame = function(df,
 
       x_to_scale = colnames(scaled_x)
       non_x_cols = setdiff(names(df.transf), x_to_scale)
-      keep_cols = c(y_col, d_cols, cluster_cols)
+      keep_cols = c(y_col, d_cols, panel_id, time_id, cluster_cols)
       keep_cols = intersect(non_x_cols, keep_cols)
       unscaled_data = df.transf[, keep_cols, drop = FALSE]
 
@@ -596,6 +703,8 @@ xtdml_data_from_data_frame = function(df,
                           y_col  = y_col,
                           d_cols = d_cols,
                           dbar_col = dbar_col,
+                          panel_id = panel_id,
+                          time_id = time_id,
                           cluster_cols = cluster_cols,
                           approach = approach,
                           transformX = transformX)
@@ -603,4 +712,3 @@ xtdml_data_from_data_frame = function(df,
     return(data)
   }
 }
-
