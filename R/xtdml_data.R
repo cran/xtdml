@@ -497,7 +497,7 @@ xtdml_data = R6Class("xtdml_data",
 #'
 #' @param approach (`character(1)`) \cr
 #' A `character()` (`"fd-exact"`, `"wg-approx"`, `"cre"` or `"pooled"`) specifying the panel data
-#' technique to apply to estimate the causal model. Default is `"fd-exact"`.
+#' technique to apply to estimate the causal model. Default is `"NULL"`.
 #'
 #' @param transformX (`character(1)`) \cr
 #' A `character()` (`"no"`, `"minmax"` or `"poly"`) specifying the type
@@ -567,94 +567,56 @@ xtdml_data_from_data_frame = function(df,
 
     dbar_col = NULL
 
+    # 1. Define set of X. Add L.x for FD, and (xbar,dbar) for CRE
     if(approach=="cre"){
-
-      df.cre = df %>%
+      df = df %>%
         group_by(across(all_of(panel_id))) %>%
-        mutate(across(c(x_cols, d_cols), ~  mean(.x), .names = "m_{col}"))
-
-      df.transf = as.data.frame(df.cre)
+        mutate(across(c(x_cols, d_cols), ~  mean(.x), .names = "m_{col}")) %>%
+        ungroup()
 
       Lx_cols = paste0("m_", x_cols)
       x_cols_plus = c(x_cols, Lx_cols)
       dbar_col = paste0("m_", d_cols)
 
-    }else if(approach=="fd-exact"){
-
-      df.fd = df %>%
+    } else if(approach=="fd-exact"){
+      df = df %>%
         group_by(across(all_of(panel_id))) %>%
         mutate(across(x_cols, ~  lag(.x), .names = "L.{col}"))   %>%
         mutate(across(c(d_cols, y_col), ~ c(NA, diff(.x))))  %>%
         ungroup()
-
-      complete_rows = complete.cases(df.fd)
-
-      df.fd = df.fd[complete_rows, ]
-      df.transf = as.data.frame(df.fd)
+      complete_rows = complete.cases(df)
+      df = df[complete_rows, ]
 
       Lx_cols = paste0("L.", x_cols)
       x_cols_plus = c(x_cols, Lx_cols)
 
-    }else if(approach=="wg-approx"){
-
-      if (length(cluster_cols) != 1) {
-        stop("The `wg-approx` approach currently supports only one cluster column (e.g., individual ID).")
-      }
-
-      df_no_idx = df %>% select(all_of(c(x_cols, y_col, d_cols)))
-
-      df_gm = df_no_idx %>%
-        summarise(across(everything(), mean, na.rm = TRUE))
-      gm_list = as.list(df_gm)
-
-      df_mi = df %>%
-        group_by(across(all_of(panel_id))) %>%
-        mutate(across(all_of(c(x_cols, y_col, d_cols)), ~ mean(.x, na.rm = TRUE), .names = "m.{col}")) %>%
-        ungroup()
-
-      var_names = c(x_cols, y_col, d_cols)
-      df_dm = df_no_idx
-
-      for (v in var_names) {
-        individual_mean = df_mi[[paste0("m.", v)]]
-        grand_mean = gm_list[[v]]
-        df_dm[[v]] = df_no_idx[[v]] - individual_mean + grand_mean
-      }
-
-      df_dm[[panel_id]] = df[[panel_id]]
-      df_dm[[time_id]] = df[[time_id]]
-      df_dm[[cluster_cols]] = df[[cluster_cols]]
-
-      df.transf = as.data.frame(df_dm)
-      x_cols_plus = x_cols
-
-    } else if(approach=="pooled"){
-      df.transf = df
+    }else {
       x_cols_plus = x_cols
     }
 
+    # 2. Transform set of X based on chosen transformation
     if (transformX=="poly"){
 
-      dta_x = df.transf[, x_cols, drop = FALSE]
+      dta_x = df[, x_cols, drop = FALSE]
       dta2_x = polyexp(dta_x)
 
-      if (approach=="wg-approx" | approach =="pooled"){
-        df_expanded = dta2_x
-      }else {
-        dta_Lx = df.transf[, Lx_cols, drop = FALSE]
+      if (approach=="cre"| approach =="fd-exact"){
+        dta_Lx = df[, Lx_cols, drop = FALSE]
         dta2_Lx = polyexp(dta_Lx)
         df_expanded = cbind(dta2_x, dta2_Lx)
+      }else {
+        df_expanded = dta2_x
       }
 
-      df_expanded[[y_col]]         = df.transf[[y_col]]
-      df_expanded[[d_cols]]        = df.transf[[d_cols]]
-      df_expanded[[panel_id]]      = df.transf[[panel_id]]
-      df_expanded[[time_id]]       = df.transf[[time_id]]
-      df_expanded[[cluster_cols]]  = df.transf[[cluster_cols]]
+      df_expanded[[y_col]]         = df[[y_col]]
+      df_expanded[[d_cols]]        = df[[d_cols]]
+      df_expanded[[panel_id]]      = df[[panel_id]]
+      df_expanded[[time_id]]       = df[[time_id]]
+      df_expanded[[cluster_cols]]  = df[[cluster_cols]]
 
 
       if (approach == "cre"){
-        df_expanded[[dbar_col]] = df.transf[[dbar_col]]
+        df_expanded[[dbar_col]] = df[[dbar_col]]
         protected_cols = c(y_col, d_cols, dbar_col, panel_id, time_id, cluster_cols)
       } else{
         protected_cols = c(y_col, d_cols, panel_id, time_id, cluster_cols)
@@ -663,7 +625,6 @@ xtdml_data_from_data_frame = function(df,
       protected_cols = intersect(protected_cols, colnames(df_expanded))
 
       df2 = df_expanded[, c(protected_cols, setdiff(colnames(df_expanded), protected_cols))]
-
       x_cols_plus = setdiff(names(df2), protected_cols)
 
     } else if (transformX=="minmax"){
@@ -674,17 +635,17 @@ xtdml_data_from_data_frame = function(df,
         x_to_scale = x_cols_plus
       }
 
-      main = df.transf[, x_to_scale]
+      main = df[, x_to_scale]
       maxs = apply(main, 2, max)
       mins = apply(main, 2, min)
       scaled_x = as.data.frame(scale(main, center = mins, scale = maxs - mins))
       scaled_x = scaled_x[, colSums(is.na(scaled_x) | is.nan(as.matrix(scaled_x))) == 0, drop = FALSE]
 
       x_to_scale = colnames(scaled_x)
-      non_x_cols = setdiff(names(df.transf), x_to_scale)
+      non_x_cols = setdiff(names(df), x_to_scale)
       keep_cols = c(y_col, d_cols, panel_id, time_id, cluster_cols)
       keep_cols = intersect(non_x_cols, keep_cols)
-      unscaled_data = df.transf[, keep_cols, drop = FALSE]
+      unscaled_data = df[, keep_cols, drop = FALSE]
 
       df2 = cbind(scaled_x, unscaled_data)
 
@@ -695,10 +656,46 @@ xtdml_data_from_data_frame = function(df,
       }
 
     }else if (transformX=="no"){
-      df2 = df.transf
+      df2 = df
     }
 
-    data = xtdml_data$new(df2,
+    # 3. Apply panel data transformation to transformed X
+    if(approach=="wg-approx"){
+
+      # if (length(cluster_cols) != 1) {
+      #   stop("The `wg-approx` approach currently supports only one cluster column (e.g., individual ID).")
+      # }
+
+      df_no_idx = df2 %>% select(all_of(c(x_cols_plus, y_col, d_cols)))
+
+      df_gm = df_no_idx %>%
+        summarise(across(everything(), mean, na.rm = TRUE))
+      gm_list = as.list(df_gm)
+
+      df_mi = df2 %>%
+        group_by(across(all_of(panel_id))) %>%
+        mutate(across(all_of(c(x_cols_plus, y_col, d_cols)), ~ mean(.x, na.rm = TRUE), .names = "m.{col}")) %>%
+        ungroup()
+
+      var_names = c(x_cols_plus, y_col, d_cols)
+      df_dm = df_no_idx
+
+      for (v in var_names) {
+        individual_mean = df_mi[[paste0("m.", v)]]
+        grand_mean = gm_list[[v]]
+        df_dm[[v]] = df_no_idx[[v]] - individual_mean + grand_mean
+      }
+
+      df_dm[[panel_id]] = df2[[panel_id]]
+      df_dm[[time_id]] = df2[[time_id]]
+      df_dm[[cluster_cols]] = df2[[cluster_cols]]
+
+      df.transf = as.data.frame(df_dm)
+
+    }else{
+      df.transf = as.data.frame(df2)
+    }
+    data = xtdml_data$new(df.transf,
                           x_cols = x_cols_plus,
                           y_col  = y_col,
                           d_cols = d_cols,
@@ -712,3 +709,4 @@ xtdml_data_from_data_frame = function(df,
     return(data)
   }
 }
+

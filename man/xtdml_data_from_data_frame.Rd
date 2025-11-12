@@ -41,7 +41,7 @@ The cluster variables. Default is \code{panel_id}.}
 
 \item{approach}{(\code{character(1)}) \cr
 A \code{character()} (\code{"fd-exact"}, \code{"wg-approx"}, \code{"cre"} or \code{"pooled"}) specifying the panel data
-technique to apply to estimate the causal model. Default is \code{"fd-exact"}.}
+technique to apply to estimate the causal model. Default is \code{"NULL"}.}
 
 \item{transformX}{(\code{character(1)}) \cr
 A \code{character()} (\code{"no"}, \code{"minmax"} or \code{"poly"}) specifying the type

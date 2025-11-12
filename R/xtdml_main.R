@@ -854,7 +854,7 @@ xtdml <- R6Class("xtdml",
     set_ml_nuisance_params = function(learner = NULL,
                                       treat_var = NULL,
                                       params,
-                                      set_fold_specific = FALSE) {  ##add for dbar
+                                      set_fold_specific = FALSE) {
 
       valid_learner = self$params_names()
       assert_character(learner, len = 1)
@@ -1114,9 +1114,8 @@ xtdml <- R6Class("xtdml",
         }
       }
 
-      # --- NEW: tuner (modern API) ---
+      # NEW: tuner (modern API)
       if (!test_names(names(tune_settings), must.include = "tuner")) {
-        # default: grid search with 5 resolution steps
         tune_settings$tuner = mlr3tuning::tnr("grid_search", resolution = 5)
       } else {
         assert_class(tune_settings$tuner, "Tuner")
@@ -1125,8 +1124,6 @@ xtdml <- R6Class("xtdml",
       return(tune_settings)
     },
     initialize_arrays = function() {
-
-      #score elements
       private$psi_theta_ = array(NA_real_, dim = c(
         self$data$n_obs, self$n_rep,
         self$data$n_treat))
@@ -1340,9 +1337,6 @@ xtdml <- R6Class("xtdml",
     orth_est_theta = function() {
 
       dml_procedure = self$dml_procedure
-      # dml_approach  = self$dml_approach
-      # dml_type      = self$dml_type
-      # xtdml = self$xtdml
 
       psi_theta_a = private$get__psi_theta_a()
       psi_theta_b = private$get__psi_theta_b()
@@ -1392,9 +1386,6 @@ xtdml <- R6Class("xtdml",
             test_cluster_inds,
             function(x) length(x))
           scaling_factor = 1 / prod(xx)
-
-          # print(paste0("[test_index] in fold ", i_fold, " : ", test_index))
-
           psi_theta_a_subsample_mean = psi_theta_a_subsample_mean +
             scaling_factor * sum(psi_theta_a[test_index])
           psi_theta_b_subsample_mean = psi_theta_b_subsample_mean +

@@ -244,14 +244,6 @@ extract_models = function(obj_resampling) {
   return(models)
 }
 
-# # Define the rmse function
-# RMSE_ = function(y_pred, y_true) {
-#   # Identify non-missing values
-#   subset = !is.na(y_true)
-#   rmse = RMSE(y_pred[subset], y_true[subset])
-#   return(rmse)
-# }
-
 initiate_learner = function(learner, task_type, params,
                             return_train_preds = FALSE) {
 
