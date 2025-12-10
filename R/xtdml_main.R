@@ -1,4 +1,4 @@
-#' @title Abstract class xtdml
+#' @title Abstract Class `xtdml`
 #'
 #' @description
 #' Abstract base class that cannot be initialized.
@@ -348,80 +348,83 @@ xtdml <- R6Class("xtdml",
   ),
   public = list(
     #' @description
-    #' DML with FE is an abstract class that can't be initialized.
+    #' `xtdml` is an abstract class that can't be initialized.
     initialize = function() {
       stop("xtdml is an abstract class that can't be initialized.")
     },
 
     #' @description
-    #' Print 'DML with FE' objects.
+    #' Prints `xtdml` objects.
     print = function() {
-
-      class_name = class(self)[1]
-      header = paste0(
-        "================= ", class_name,
-        " Object ==================\n")
-
-      if (self$data$n_cluster_vars == 1 || self$data$n_cluster_vars == 2) {
-        cluster_info = paste0(
-          "Panel identifier: ", paste0(self$data$panel_id, collapse = ", "), "\n",
-          "Time identifier: ", paste0(self$data$time_id, collapse = ", "), "\n",
-          "Cluster variable(s): ", paste0(self$data$cluster_cols, collapse = ", "), "\n")
+      if (all(is.na(self$coef_theta))) {
+        message("fit() not yet called.")
       } else {
-        stop(print("At most two cluster variables allowed"))
-      }
-      data_info = paste0(
-        "Outcome variable: ", self$data$y_col, "\n",
-        "Treatment variable: ", paste0(self$data$d_cols, collapse = ", "),
-        "\n",
-        "Covariates: ", paste0(cbind(self$data$x_cols), collapse = ", "), "\n",
-        cluster_info,
-        "No. Observations: ", self$data$n_obs, "\n",
-        "No. Groups: ", length(unique(self$data$data_model[[self$data$cluster_cols]])), "\n")
-      if (is.character(self$score)) {
-        score_info = paste0(
-          "Score function: ", self$score, "\n",
-          "DML algorithm: ", self$dml_procedure, "\n",
-          "Panel data approach: ", self$data$approach, "\n",
-          "Type of transformation for X: ", self$data$transformX, "\n")
-      }
-      learner_info = character(length(self$learner))
-      for (i_lrn in seq_len(length(self$params))) {
-        if (any(class(self$learner[[i_lrn]]) == "Learner")) {
-          learner_info[i_lrn] = paste0(
-            "Learner of nuisance ", self$params_names()[[i_lrn]], ": ", self$learner[[i_lrn]]$id, "\n",
-            "RMSE of nuisance ", self$params_names()[[i_lrn]], " : ", format(round(self$rmses[[i_lrn]], 5), nsmall = 5), "\n")
+        class_name = class(self)[1]
+        header = paste0(
+          "================= ", class_name,
+          " Object ==================\n")
+
+        if (self$data$n_cluster_vars == 1 || self$data$n_cluster_vars == 2) {
+          cluster_info = paste0(
+            "Panel identifier: ", paste0(self$data$panel_id, collapse = ", "), "\n",
+            "Time identifier: ", paste0(self$data$time_id, collapse = ", "), "\n",
+            "Cluster variable(s): ", paste0(self$data$cluster_cols, collapse = ", "), "\n")
         } else {
-          learner_info[i_lrn] = paste0(
-            "Learner of nuisance ", self$params_names()[[i_lrn]], ": ", self$learner[i_lrn], "\n",
-            "RMSE of nuisance ", self$params_names()[[i_lrn]], " : ", format(round(self$rmses[[i_lrn]], 5), nsmall = 5), "\n")
+          stop(print("At most two cluster variables allowed"))
         }
+        data_info = paste0(
+          "Outcome variable: ", self$data$y_col, "\n",
+          "Treatment variable: ", paste0(self$data$d_cols, collapse = ", "),
+          "\n",
+          "Covariates: ", paste0(cbind(self$data$x_cols), collapse = ", "), "\n",
+          cluster_info,
+          "No. Observations: ", self$data$n_obs, "\n",
+          "No. Groups: ", length(unique(self$data$data_model[[self$data$cluster_cols]])), "\n")
+        if (is.character(self$score)) {
+          score_info = paste0(
+            "Score function: ", self$score, "\n",
+            "DML algorithm: ", self$dml_procedure, "\n",
+            "Panel data approach: ", self$data$approach, "\n",
+            "Type of transformation for X: ", self$data$transformX, "\n")
+        }
+        learner_info = character(length(self$learner))
+        for (i_lrn in seq_len(length(self$params))) {
+          if (any(inherits(self$learner[[i_lrn]], "Learner"))) {
+            learner_info[i_lrn] = paste0(
+              "Learner of nuisance ", self$params_names()[[i_lrn]], ": ", self$learner[[i_lrn]]$id, "\n",
+              "RMSE of nuisance ", self$params_names()[[i_lrn]], " : ", format(round(self$rmses[[i_lrn]], 5), nsmall = 5), "\n")
+          } else {
+            learner_info[i_lrn] = paste0(
+              "Learner of nuisance ", self$params_names()[[i_lrn]], ": ", self$learner[i_lrn], "\n",
+              "RMSE of nuisance ", self$params_names()[[i_lrn]], " : ", format(round(self$rmses[[i_lrn]], 5), nsmall = 5), "\n")
+          }
+        }
+        model_info = paste0("Model RMSE: ", format(round(self$model_rmse, 5), nsmall = 5), "\n")
+        resampling_info = paste0(
+            "No. folds: ", self$n_folds, "\n",
+            "No. folds per cluster: ", private$n_folds_per_cluster, "\n",
+            "No. repeated sample splits: ", self$n_rep, "\n",
+            "Apply cross-fitting: ", self$apply_cross_fitting, "\n")
+
+        cat(header, "\n", "\n",
+          "\n------------------ Data summary ------------------\n",
+          data_info,
+          "\n------------------ Score & algorithm ------------------\n",
+          score_info,
+          "\n------------------ Machine learner ------------------\n",
+          learner_info, model_info,
+          "\n------------------ Resampling ------------------\n",
+          resampling_info,
+          "\n------------------ Fit summary ------------------\n ",
+          sep = "")
+        self$summary()
+
+       invisible(self)
       }
-      model_info = paste0("Model RMSE: ", format(round(self$model_rmse, 5), nsmall = 5), "\n")
-      resampling_info = paste0(
-          "No. folds: ", self$n_folds, "\n",
-          "No. folds per cluster: ", private$n_folds_per_cluster, "\n",
-          "No. repeated sample splits: ", self$n_rep, "\n",
-          "Apply cross-fitting: ", self$apply_cross_fitting, "\n")
-
-      cat(header, "\n", "\n",
-        "\n------------------ Data summary ------------------\n",
-        data_info,
-        "\n------------------ Score & algorithm ------------------\n",
-        score_info,
-        "\n------------------ Machine learner ------------------\n",
-        learner_info, model_info,
-        "\n------------------ Resampling ------------------\n",
-        resampling_info,
-        "\n------------------ Fit summary ------------------\n ",
-        sep = "")
-      self$summary()
-
-      invisible(self)
     },
 
     #' @description
-    #' Estimate DML models with FE.
+    #' Estimates model.
     #'
     #' @param store_predictions (`logical(1)`) \cr
     #' Indicates whether the predictions for the nuisance functions should be
@@ -489,7 +492,7 @@ xtdml <- R6Class("xtdml",
     },
 
     #' @description
-    #' Draw sample splitting for Double ML models with FE.
+    #' Draws sample splitting for DML procedure.
     #'
     #' The samples are drawn according to the attributes `n_folds`, `n_rep`
     #' and `apply_cross_fitting`.
@@ -566,7 +569,7 @@ xtdml <- R6Class("xtdml",
     },
 
     #' @description
-    #' Hyperparameter tuning for Double Machine Learning (DML) models with fixed effects.
+    #' Conducts hyperparameter tuning.
     #'
     #' The hyperparameter tuning is performed using the tuning methods provided
     #' in the [mlr3tuning](https://mlr3tuning.mlr-org.com/) package.
@@ -586,16 +589,16 @@ xtdml <- R6Class("xtdml",
     #' * `terminator` (`[bbotk::Terminator]`) \cr
     #'   A [Terminator][bbotk::Terminator] object specifying when the tuning
     #'   process should stop (e.g., `trm("evals", n_evals = 20)`).
-    #' * `tuner` — a [Tuner][mlr3tuning::Tuner] object created with
+    #' * `tuner` a [Tuner][mlr3tuning::Tuner] object created with
     #'   [tnr()][mlr3tuning::tnr()], which defines the optimization algorithm.
     #'   (e.g., `tnr("grid_search")` or `tnr("random_search")`).
     #'   If set to `"grid_search"`, then additional argument `"resolution"` is required.
-    #' * `rsmp_tune` — a [Resampling][mlr3::Resampling] object or a key passed to
+    #' * `rsmp_tune`  a [Resampling][mlr3::Resampling] object or a key passed to
     #'   [rsmp()][mlr3::rsmp()].
     #'   Defines the resampling strategy used during tuning (default: `"cv"`).
-    #' * `n_folds_tune` — an integer scalar (optional).
+    #' * `n_folds_tune` an integer scalar (optional).
     #'   Number of folds used if `rsmp_tune = "cv"`. Default is `5`.
-    #' * `measure` — a named `list()` (optional).
+    #' * `measure` a named `list()` (optional).
     #'   Contains the performance measures used for tuning.
     #'   Each element must be either a [Measure][mlr3::Measure] object or a key to
     #'   [msr()][mlr3::msr()].
@@ -606,13 +609,6 @@ xtdml <- R6Class("xtdml",
     #' @param tune_on_folds (`logical(1)`) \cr
     #' Indicates whether the tuning should be performed separately for each
     #' cross-fitting fold (`TRUE`) or globally across all folds (`FALSE`, default).
-    #'
-    #' @examples
-    #' tune_settings = list(
-    #'   n_folds_tune = 5,
-    #'   rsmp_tune = mlr3::rsmp("cv", folds = 5),
-    #'   terminator = mlr3tuning::trm("evals", n_evals = 20),
-    #'   tuner = mlr3tuning::tnr("grid_search", resolution = 10))
     #'
     #' @return self
     tune = function(param_set,
@@ -707,7 +703,7 @@ xtdml <- R6Class("xtdml",
     },
 
     #' @description
-    #' Summary for DML models with FE after calling `fit()`.
+    #' Summary for estimated model after calling `fit()`.
     #'
     #' @param digits (`integer(1)`) \cr
     #' The number of significant digits to use when printing.
@@ -745,7 +741,17 @@ xtdml <- R6Class("xtdml",
     },
 
     #' @description
-    #' Confidence intervals for DML models with FE.
+    #' Plotting method for `xtdml`.
+    #'
+    #' `plot()` is not implemented for `xtdml` objects. Attempting to call it returns an informative message.
+    #' Use the `print()` or `summary()` methods to view model results.
+    plot = function() {
+      message("Plotting method is not supported for objects of class `xtdml`. ",
+              "Please use the `summary()` or `print()` methods to inspect model results.")
+    },
+
+    #' @description
+    #' Confidence intervals for estimated model.
     #'
     #' @param joint (`logical(1)`) \cr
     #' Indicates whether joint confidence intervals are computed.
@@ -824,7 +830,7 @@ xtdml <- R6Class("xtdml",
     },
 
     #' @description
-    #' Set hyperparameters for the nuisance models of DML models with FE.
+    #' Sets hyperparameters for the nuisance models of estimated model.
     #'
     #' Note that in the current implementation, either all parameters have to
     #' be set globally or all parameters have to be provided fold-specific.
@@ -885,7 +891,7 @@ xtdml <- R6Class("xtdml",
     },
 
     #' @description
-    #' Get hyper-parameters for the nuisance model of xtdml models.
+    #' Gets hyper-parameters for the nuisance model.
     #'
     #' @param learner (`character(1)`) \cr
     #' The nuisance model/learner (see method `params_names()`)
@@ -902,8 +908,23 @@ xtdml <- R6Class("xtdml",
         params = self$params[[learner]][[self$data$treat_col]]
       }
       return(params)
+    },
+
+    #' @description
+    #' Gets panel information for estimation models.
+    #'
+    #' @return named `list()`with panel information for the model.
+    get_panel_info = function() {
+      n_obs = self$data$n_obs
+      n_subjects = length(unique(self$data$data_model[[self$data$panel_id]]))
+      n_groups = length(unique(self$data$data_model[[self$data$cluster_cols]]))
+
+      list(n_obs = n_obs,
+           n_subjects = n_subjects,
+           n_groups = n_groups)
     }
   ),
+
   private = list(
     all_coef_theta_ = NULL,
     all_dml1_coef_theta_ = NULL,

@@ -2,8 +2,8 @@ Package: xtdml
 Type: Package
 Title: Double Machine Learning for Static Panel Models with Fixed
         Effects
-Version: 0.1.9
-Date: 2025-11-12
+Version: 0.1.10
+Date: 2025-12-10
 Authors@R: 
     person("Annalivia", "Polselli",  role = c("aut", "cre"),
     email = "apolselli.econ@gmail.com", 
@@ -18,10 +18,10 @@ Imports: R6 (>= 2.4.1), data.table (>= 1.12.8), mlr3 (>= 0.19.0),
         0.19.0), mvtnorm, utils, clusterGeneration, readstata13,
         magrittr, dplyr, stats, MLmetrics, checkmate
 RoxygenNote: 7.3.2
-Suggests: rpart, mlr3pipelines, bbotk (>= 1.6.0)
+Suggests: rpart, mlr3pipelines, bbotk (>= 1.8.0)
 NeedsCompilation: no
-Packaged: 2025-11-12 20:35:34 UTC; annal
+Packaged: 2025-12-10 16:19:41 UTC; annal
 Author: Annalivia Polselli [aut, cre] (ORCID:
     <https://orcid.org/0009-0002-7579-7926>)
 Repository: CRAN
-Date/Publication: 2025-11-12 23:30:02 UTC
+Date/Publication: 2025-12-10 16:40:02 UTC

@@ -2,7 +2,7 @@
 % Please edit documentation in R/xtdml_main.R
 \name{xtdml}
 \alias{xtdml}
-\title{Abstract class xtdml}
+\title{Abstract Class \code{xtdml}}
 \format{
 \link[R6:R6Class]{R6::R6Class} object.
 }
@@ -18,19 +18,6 @@ and computation of the Neyman-orthogonal score functions.
 
 \code{xtdml} builds on the object-oriented architecture of \code{DoubleML} (Bach et al., 2024), using
 the 'mlr3' ecosystem and the 'R6' package. \code{xtdml} follows most of the notation of \code{DoubleML}.
-}
-\examples{
-
-## ------------------------------------------------
-## Method `xtdml$tune`
-## ------------------------------------------------
-
-tune_settings = list(
-  n_folds_tune = 5,
-  rsmp_tune = mlr3::rsmp("cv", folds = 5),
-  terminator = mlr3tuning::trm("evals", n_evals = 20),
-  tuner = mlr3tuning::tnr("grid_search", resolution = 10))
-
 }
 \seealso{
 Other xtdml: 
@@ -158,11 +145,13 @@ Results from hyperparameter tuning.}
 \item \href{#method-xtdml-split_samples}{\code{xtdml$split_samples()}}
 \item \href{#method-xtdml-tune}{\code{xtdml$tune()}}
 \item \href{#method-xtdml-summary}{\code{xtdml$summary()}}
+\item \href{#method-xtdml-plot}{\code{xtdml$plot()}}
 \item \href{#method-xtdml-confint}{\code{xtdml$confint()}}
 \item \href{#method-xtdml-learner_names}{\code{xtdml$learner_names()}}
 \item \href{#method-xtdml-params_names}{\code{xtdml$params_names()}}
 \item \href{#method-xtdml-set_ml_nuisance_params}{\code{xtdml$set_ml_nuisance_params()}}
 \item \href{#method-xtdml-get_params}{\code{xtdml$get_params()}}
+\item \href{#method-xtdml-get_panel_info}{\code{xtdml$get_panel_info()}}
 \item \href{#method-xtdml-clone}{\code{xtdml$clone()}}
 }
 }
@@ -170,7 +159,7 @@ Results from hyperparameter tuning.}
 \if{html}{\out{<a id="method-xtdml-new"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-new}{}}}
 \subsection{Method \code{new()}}{
-DML with FE is an abstract class that can't be initialized.
+\code{xtdml} is an abstract class that can't be initialized.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{xtdml$new()}\if{html}{\out{</div>}}
 }
@@ -180,7 +169,7 @@ DML with FE is an abstract class that can't be initialized.
 \if{html}{\out{<a id="method-xtdml-print"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-print}{}}}
 \subsection{Method \code{print()}}{
-Print 'DML with FE' objects.
+Prints \code{xtdml} objects.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{xtdml$print()}\if{html}{\out{</div>}}
 }
@@ -190,7 +179,7 @@ Print 'DML with FE' objects.
 \if{html}{\out{<a id="method-xtdml-fit"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-fit}{}}}
 \subsection{Method \code{fit()}}{
-Estimate DML models with FE.
+Estimates model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{xtdml$fit(store_predictions = FALSE, store_models = FALSE)}\if{html}{\out{</div>}}
 }
@@ -217,7 +206,7 @@ self
 \if{html}{\out{<a id="method-xtdml-split_samples"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-split_samples}{}}}
 \subsection{Method \code{split_samples()}}{
-Draw sample splitting for Double ML models with FE.
+Draws sample splitting for DML procedure.
 
 The samples are drawn according to the attributes \code{n_folds}, \code{n_rep}
 and \code{apply_cross_fitting}.
@@ -233,7 +222,7 @@ self
 \if{html}{\out{<a id="method-xtdml-tune"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-tune}{}}}
 \subsection{Method \code{tune()}}{
-Hyperparameter tuning for Double Machine Learning (DML) models with fixed effects.
+Conducts hyperparameter tuning.
 
 The hyperparameter tuning is performed using the tuning methods provided
 in the \href{https://mlr3tuning.mlr-org.com/}{mlr3tuning} package.
@@ -266,16 +255,16 @@ Each entry is passed to the corresponding components from
 \item \code{terminator} (\verb{[bbotk::Terminator]}) \cr
 A \link[bbotk:Terminator]{Terminator} object specifying when the tuning
 process should stop (e.g., \code{trm("evals", n_evals = 20)}).
-\item \code{tuner} — a \link[mlr3tuning:Tuner]{Tuner} object created with
+\item \code{tuner} a \link[mlr3tuning:Tuner]{Tuner} object created with
 \link[mlr3tuning:tnr]{tnr()}, which defines the optimization algorithm.
 (e.g., \code{tnr("grid_search")} or \code{tnr("random_search")}).
 If set to \code{"grid_search"}, then additional argument \code{"resolution"} is required.
-\item \code{rsmp_tune} — a \link[mlr3:Resampling]{Resampling} object or a key passed to
+\item \code{rsmp_tune}  a \link[mlr3:Resampling]{Resampling} object or a key passed to
 \link[mlr3:mlr_sugar]{rsmp()}.
 Defines the resampling strategy used during tuning (default: \code{"cv"}).
-\item \code{n_folds_tune} — an integer scalar (optional).
+\item \code{n_folds_tune} an integer scalar (optional).
 Number of folds used if \code{rsmp_tune = "cv"}. Default is \code{5}.
-\item \code{measure} — a named \code{list()} (optional).
+\item \code{measure} a named \code{list()} (optional).
 Contains the performance measures used for tuning.
 Each element must be either a \link[mlr3:Measure]{Measure} object or a key to
 \link[mlr3:mlr_sugar]{msr()}.
@@ -293,25 +282,12 @@ cross-fitting fold (\code{TRUE}) or globally across all folds (\code{FALSE}, def
 \subsection{Returns}{
 self
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{tune_settings = list(
-  n_folds_tune = 5,
-  rsmp_tune = mlr3::rsmp("cv", folds = 5),
-  terminator = mlr3tuning::trm("evals", n_evals = 20),
-  tuner = mlr3tuning::tnr("grid_search", resolution = 10))
-
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-summary"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-summary}{}}}
 \subsection{Method \code{summary()}}{
-Summary for DML models with FE after calling \code{fit()}.
+Summary for estimated model after calling \code{fit()}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{xtdml$summary(digits = max(3L, getOption("digits") - 3L))}\if{html}{\out{</div>}}
 }
@@ -326,10 +302,23 @@ The number of significant digits to use when printing.}
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-xtdml-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-xtdml-plot}{}}}
+\subsection{Method \code{plot()}}{
+Plotting method for \code{xtdml}.
+
+\code{plot()} is not implemented for \code{xtdml} objects. Attempting to call it returns an informative message.
+Use the \code{print()} or \code{summary()} methods to view model results.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{xtdml$plot()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-confint"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-confint}{}}}
 \subsection{Method \code{confint()}}{
-Confidence intervals for DML models with FE.
+Confidence intervals for estimated model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{xtdml$confint(parm, joint = FALSE, level = 0.95)}\if{html}{\out{</div>}}
 }
@@ -386,7 +375,7 @@ Returns the names of the nuisance models with hyperparameters.
 \if{html}{\out{<a id="method-xtdml-set_ml_nuisance_params"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-set_ml_nuisance_params}{}}}
 \subsection{Method \code{set_ml_nuisance_params()}}{
-Set hyperparameters for the nuisance models of DML models with FE.
+Sets hyperparameters for the nuisance models of estimated model.
 
 Note that in the current implementation, either all parameters have to
 be set globally or all parameters have to be provided fold-specific.
@@ -433,7 +422,7 @@ self
 \if{html}{\out{<a id="method-xtdml-get_params"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-get_params}{}}}
 \subsection{Method \code{get_params()}}{
-Get hyper-parameters for the nuisance model of xtdml models.
+Gets hyper-parameters for the nuisance model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{xtdml$get_params(learner)}\if{html}{\out{</div>}}
 }
@@ -448,6 +437,19 @@ The nuisance model/learner (see method \code{params_names()})}
 }
 \subsection{Returns}{
 named \code{list()}with paramers for the nuisance model/learner.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-xtdml-get_panel_info"></a>}}
+\if{latex}{\out{\hypertarget{method-xtdml-get_panel_info}{}}}
+\subsection{Method \code{get_panel_info()}}{
+Gets panel information for estimation models.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{xtdml$get_panel_info()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+named \code{list()}with panel information for the model.
 }
 }
 \if{html}{\out{<hr>}}

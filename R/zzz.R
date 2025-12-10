@@ -1,8 +1,9 @@
+utils::globalVariables("TuningInstanceSingleCrit")
 #' @import checkmate
 #' @importFrom R6 R6Class
 #' @importFrom mlr3 lrn rsmp msr resample default_measures Task TaskRegr
 #' TaskClassif
-#' @importFrom mlr3tuning tnr trm
+#' @import mlr3tuning
 #' @importFrom mlr3learners LearnerRegrLM
 #' @importFrom mlr3misc insert_named
 #' @importFrom data.table data.table as.data.table setnafill
