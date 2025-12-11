@@ -1,4 +1,3 @@
-utils::globalVariables("TuningInstanceSingleCrit")
 #' @import checkmate
 #' @importFrom R6 R6Class
 #' @importFrom mlr3 lrn rsmp msr resample default_measures Task TaskRegr

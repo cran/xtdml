@@ -255,7 +255,7 @@ xtdml_plr <- R6Class("xtdml_plr",
                        #' @param tune_settings (named `list()`) \cr
                        #' A named `list()` with arguments passed to the hyperparameter-tuning with
                        #' [mlr3tuning](https://mlr3tuning.mlr-org.com/) to set up
-                       #' a tuning instance using `mlr3tuning:::TuningInstanceSingleCrit$new()` (see the mlr3tuning package).
+                       #' a tuning instance using `mlr3tuning::TuningInstanceBatchSingleCrit$new()` (see the mlr3tuning package).
                        #'
                        #' `tune_settings` has entries
                        #' * `terminator` ([Terminator][bbotk::Terminator]) \cr

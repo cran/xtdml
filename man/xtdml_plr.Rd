@@ -261,7 +261,7 @@ class \link[paradox:ParamSet]{ParamSet}.}
 \item{\code{tune_settings}}{(named \code{list()}) \cr
 A named \code{list()} with arguments passed to the hyperparameter-tuning with
 \href{https://mlr3tuning.mlr-org.com/}{mlr3tuning} to set up
-a tuning instance using \code{mlr3tuning:::TuningInstanceSingleCrit$new()} (see the mlr3tuning package).
+a tuning instance using \code{mlr3tuning::TuningInstanceBatchSingleCrit$new()} (see the mlr3tuning package).
 
 \code{tune_settings} has entries
 \itemize{
