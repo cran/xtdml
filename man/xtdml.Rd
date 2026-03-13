@@ -146,6 +146,7 @@ Results from hyperparameter tuning.}
 \item \href{#method-xtdml-tune}{\code{xtdml$tune()}}
 \item \href{#method-xtdml-summary}{\code{xtdml$summary()}}
 \item \href{#method-xtdml-plot}{\code{xtdml$plot()}}
+\item \href{#method-xtdml-predict}{\code{xtdml$predict()}}
 \item \href{#method-xtdml-confint}{\code{xtdml$confint()}}
 \item \href{#method-xtdml-learner_names}{\code{xtdml$learner_names()}}
 \item \href{#method-xtdml-params_names}{\code{xtdml$params_names()}}
@@ -305,14 +306,66 @@ The number of significant digits to use when printing.}
 \if{html}{\out{<a id="method-xtdml-plot"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-plot}{}}}
 \subsection{Method \code{plot()}}{
-Plotting method for \code{xtdml}.
+Plots nuisance-function diagnostics after calling
+\code{fit(store_predictions = TRUE)}.
 
-\code{plot()} is not implemented for \code{xtdml} objects. Attempting to call it returns an informative message.
-Use the \code{print()} or \code{summary()} methods to view model results.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$plot()}\if{html}{\out{</div>}}
+Produces a 2x2 panel with the following diagnostic plots for each nuisance parameter:
+\itemize{
+\item fitted vs residual(top-right)
+\item fitted vs target (top-left)
+\item fitted vs target (bottom-left)
+\item Q-Q plot of residuals
 }
 
+For score \code{"orth-PO"}, the nuisance parameters are \code{l} and \code{m}.
+For score \code{"orth-IV"}, the nuisance parameters are \code{g} and \code{m}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{xtdml$plot(i_rep = 1L, i_treat = 1L, ask = interactive(), title = NULL, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{i_rep}}{(\code{integer(1)}) repetition index. Default \code{1L}.}
+
+\item{\code{i_treat}}{(\code{integer(1)}) treatment index. Default \code{1L}.}
+
+\item{\code{ask}}{(\code{logical(1)}) \cr
+Whether to ask before drawing the plot page. Default is \code{interactive()}.}
+
+\item{\code{title}}{(\code{character()}) title of graph.}
+
+\item{\code{...}}{additional graphical arguments passed to \code{plot()}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly returns \code{NULL}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-xtdml-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-xtdml-predict}{}}}
+\subsection{Method \code{predict()}}{
+Computes predicted outcomes for specified values of the treatment variable.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{xtdml$predict(d)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{d}}{(\code{numeric()}) \cr
+Counterfactual treatment value. It can be can be a single value or a vector
+of multiple treatment levels.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An \code{array()} of predicted outcomes with dimensions
+\verb{(n_obs, n_d, n_rep, n_treat)}, where \code{n_d} is the number of treatment-value
+specifications.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-confint"></a>}}

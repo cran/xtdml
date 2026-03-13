@@ -84,6 +84,7 @@ Other xtdml:
 <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="learner_names"><a href='../../xtdml/html/xtdml.html#method-xtdml-learner_names'><code>xtdml::xtdml$learner_names()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="params_names"><a href='../../xtdml/html/xtdml.html#method-xtdml-params_names'><code>xtdml::xtdml$params_names()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="plot"><a href='../../xtdml/html/xtdml.html#method-xtdml-plot'><code>xtdml::xtdml$plot()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="predict"><a href='../../xtdml/html/xtdml.html#method-xtdml-predict'><code>xtdml::xtdml$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="print"><a href='../../xtdml/html/xtdml.html#method-xtdml-print'><code>xtdml::xtdml$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="split_samples"><a href='../../xtdml/html/xtdml.html#method-xtdml-split_samples'><code>xtdml::xtdml$split_samples()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="summary"><a href='../../xtdml/html/xtdml.html#method-xtdml-summary'><code>xtdml::xtdml$summary()</code></a></span></li>

@@ -20,7 +20,7 @@
 #' @family xtdml
 #'
 #' @export
-xtdml <- R6Class("xtdml",
+xtdml = R6Class("xtdml",
   active = list(
     #' @field all_coef_theta (`matrix()`) \cr
     #' Estimates of the causal parameter(s) `"theta"` for the `n_rep` different sample
@@ -741,13 +741,210 @@ xtdml <- R6Class("xtdml",
     },
 
     #' @description
-    #' Plotting method for `xtdml`.
+    #' Plots nuisance-function diagnostics after calling
+    #' `fit(store_predictions = TRUE)`.
     #'
-    #' `plot()` is not implemented for `xtdml` objects. Attempting to call it returns an informative message.
-    #' Use the `print()` or `summary()` methods to view model results.
-    plot = function() {
-      message("Plotting method is not supported for objects of class `xtdml`. ",
-              "Please use the `summary()` or `print()` methods to inspect model results.")
+    #' Produces a 2x2 panel with the following diagnostic plots for each nuisance parameter:
+    #' \itemize{
+    #'   \item fitted vs residual(top-right)
+    #'   \item fitted vs target (top-left)
+    #'   \item fitted vs target (bottom-left)
+    #'   \item Q-Q plot of residuals
+    #' }
+    #'
+    #' For score `"orth-PO"`, the nuisance parameters are `l` and `m`.
+    #' For score `"orth-IV"`, the nuisance parameters are `g` and `m`.
+    #'
+    #' @param ask (`logical(1)`) \cr
+    #' Whether to ask before drawing the plot page. Default is `interactive()`.
+    #'
+    #' @param i_rep (`integer(1)`) repetition index. Default `1L`.
+    #'
+    #' @param i_treat (`integer(1)`) treatment index. Default `1L`.
+    #'
+    #' @param title (`character()`) title of graph.
+    #'
+    #' @param ... additional graphical arguments passed to `plot()`.
+    #'
+    #' @return Invisibly returns `NULL`.
+    plot = function(i_rep = 1L, i_treat = 1L, ask = interactive(), title = NULL, ...) {
+
+        if (all(is.na(self$coef_theta))) {
+          stop("Model must be fitted before calling plot().")
+        }
+        if (is.null(self$predictions) || is.null(self$targets)) {
+          stop("Run fit(store_predictions = TRUE) before calling plot().")
+        }
+
+        nuis_map = switch(
+          self$score,
+          "orth-PO" = c(l = "ml_l", m = "ml_m"),
+          "orth-IV" = c(g = "ml_g", m = "ml_m"),
+          stop("Plot only implemented for scores 'orth-PO' or 'orth-IV'.")
+        )
+
+        rmse_txt = if (is.finite(self$model_rmse[i_treat])) {
+          format(round(self$model_rmse[i_treat], 4), nsmall = 4)
+        } else {
+          "NA"
+        }
+
+        old_par = graphics::par(no.readonly = TRUE)
+        old_ask = grDevices::devAskNewPage()
+        on.exit({
+          grDevices::devAskNewPage(old_ask)
+          graphics::par(old_par)
+        }, add = TRUE)
+
+        grDevices::devAskNewPage(ask)
+
+        for (lab in names(nuis_map)) {
+
+          nm = nuis_map[[lab]]
+
+          fitted_vals = self$predictions[[nm]][, i_rep, i_treat]
+          target_vals = self$targets[[nm]][, i_rep, i_treat]
+
+          keep = is.finite(fitted_vals) & is.finite(target_vals)
+
+          fitted_vals = fitted_vals[keep]
+          target_vals = target_vals[keep]
+
+          residuals = target_vals - fitted_vals
+
+          old_par = graphics::par(no.readonly = TRUE)
+          on.exit(graphics::par(old_par), add = TRUE)
+
+          graphics::par(
+            mfrow = c(2,2),
+            mar = c(4,4,2,1),
+            oma = c(0,0,3,0)
+          )
+
+          ## Residuals vs fitted
+          graphics::plot(
+            fitted_vals,
+            residuals,
+            xlab = paste0("Fitted (", lab, ")"),
+            ylab = paste0("Residuals (", lab, ")"),
+            main = paste0("Residuals vs fitted (", lab, ")"),
+            pch = 20,
+            ...
+          )
+          graphics::abline(h = 0, lty = 2)
+
+          ## Residuals vs target
+          graphics::plot(
+            target_vals,
+            residuals,
+            xlab = paste0("Target (", lab, ")"),
+            ylab = paste0("Residuals (", lab, ")"),
+            main = paste0("Residuals vs target (", lab, ")"),
+            pch = 20,
+            ...
+          )
+          graphics::abline(h = 0, lty = 2)
+
+          ## Fitted vs target
+          graphics::plot(
+            fitted_vals,
+            target_vals,
+            xlab = paste0("Fitted (", lab, ")"),
+            ylab = paste0("Target (", lab, ")"),
+            main = paste0("Fitted vs target (", lab, ")"),
+            pch = 20,
+            ...
+          )
+          graphics::abline(0,1,lty=2)
+
+          ## QQ plot
+          stats::qqnorm(
+            residuals,
+            main = paste0("QQ plot (", lab, ")"),
+            pch = 20,
+            ...
+          )
+          stats::qqline(residuals, lty = 2)
+
+          title_txt = if (is.null(title)) {
+            paste0("Diagnostics for nuisance ", lab, " | Score: ", self$score,
+                   " | Model RMSE = ", rmse_txt)
+          } else {
+            paste0(title)
+          }
+
+          graphics::mtext(
+            title_txt,
+            outer = TRUE,
+            line = 1,
+            cex = 1.2
+          )
+        }
+        invisible(NULL)
+     },
+
+    #' @description
+    #' Computes predicted outcomes for specified values of the treatment variable.
+    #'
+    #' @param d (`numeric()`) \cr
+    #' Counterfactual treatment value. It can be can be a single value or a vector
+    #' of multiple treatment levels.
+    #'
+    #' @return An `array()` of predicted outcomes with dimensions
+    #' `(n_obs, n_d, n_rep, n_treat)`, where `n_d` is the number of treatment-value
+    #' specifications.
+    predict = function(d) {
+
+      if (all(is.na(self$coef_theta))) {
+        stop("Model must be fitted before calling predict().")
+      }
+      if (missing(d)) {
+        stop("Argument `d` must be provided.")
+      }
+      if (!is.numeric(d)) {
+        stop("Argument `d` must be numeric.")
+      }
+
+      n_obs = self$data$n_obs
+
+      if (length(d) == 1L) {
+        d_mat = matrix(d, nrow = n_obs, ncol = 1L)
+        d_names = paste0("d = ", d)
+      } else if (length(d) == n_obs) {
+        d_mat = matrix(d, nrow = n_obs, ncol = 1L)
+        d_names = "unit_specific_d"
+      } else {
+        d_mat = matrix(rep(d, each = n_obs), nrow = n_obs, ncol = length(d))
+        d_names = paste0("d = ", d)
+      }
+
+      n_d = ncol(d_mat)
+
+      preds = array(
+        NA_real_,
+        dim = c(n_obs, n_d, self$n_rep, self$data$n_treat),
+        dimnames = list(
+          NULL,
+          d_names,
+          paste0("rep", seq_len(self$n_rep)),
+          self$data$d_cols
+        )
+      )
+      for (i_rep in 1:self$n_rep) {
+        private$i_rep = i_rep
+
+        for (i_treat in 1:self$data$n_treat) {
+          private$i_treat = i_treat
+          theta_hat = self$all_coef_theta[i_treat, i_rep]
+          res_y = self$res_y[, i_rep, i_treat]
+          res_d = self$res_d[, i_rep, i_treat]
+
+          for (j in 1:n_d) {
+            preds[, j, i_rep, i_treat] = res_y + theta_hat * (d_mat[, j] - res_d)
+          }
+        }
+      }
+      preds
     },
 
     #' @description
@@ -765,6 +962,7 @@ xtdml <- R6Class("xtdml",
     #' among the variables for which inference was done, either a vector of
     #' numbers or a vector of names. If missing, all parameters are considered
     #' (default).
+    #'
     #' @return A `matrix()` with the confidence interval(s).
     confint = function(parm, joint = FALSE, level = 0.95) {
       assert_logical(joint, len = 1)

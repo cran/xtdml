@@ -574,9 +574,10 @@ xtdml_data_from_data_frame = function(df,
     # 1. Define set of X. Add L.x for FD, and (xbar,dbar) for CRE
     if(approach=="cre"){
       df = df %>%
-        group_by(across(all_of(panel_id))) %>%
-        mutate(across(c(x_cols, d_cols), ~  mean(.x), .names = "m_{col}")) %>%
-        ungroup()
+        dplyr::arrange(dplyr::across(all_of(c(panel_id, time_id)))) %>%
+        dplyr::group_by(dplyr::across(all_of(panel_id))) %>%
+        dplyr::mutate(dplyr::across(c(x_cols, d_cols), ~  mean(.x), .names = "m_{col}")) %>%
+        dplyr::ungroup()
 
       Lx_cols = paste0("m_", x_cols)
       x_cols_plus = c(x_cols, Lx_cols)
@@ -584,12 +585,17 @@ xtdml_data_from_data_frame = function(df,
 
     } else if(approach=="fd-exact"){
       df = df %>%
-        group_by(across(all_of(panel_id))) %>%
-        mutate(across(x_cols, ~  lag(.x), .names = "L.{col}"))   %>%
-        mutate(across(c(d_cols, y_col), ~ c(NA, diff(.x))))  %>%
-        ungroup()
-      complete_rows = complete.cases(df)
-      df = df[complete_rows, ]
+        dplyr::arrange(dplyr::across(all_of(c(panel_id, time_id)))) %>%
+        dplyr::group_by(dplyr::across(all_of(panel_id))) %>%
+        dplyr::mutate(dplyr::across(x_cols, ~  lag(.x), .names = "L.{col}"))   %>%
+        dplyr::mutate(dplyr::across(c(d_cols, y_col), ~ c(NA, diff(.x))))  %>%
+        dplyr::mutate(first_obs = dplyr::row_number() == 1L) %>%
+        dplyr::ungroup()
+      #complete_rows = complete.cases(df)
+      #df = df[complete_rows, ]
+
+      # Identify the first row per group after sorting
+      df <- df %>% dplyr::filter(!.data$first_obs) %>% dplyr::select(-.data$first_obs)
 
       Lx_cols = paste0("L.", x_cols)
       x_cols_plus = c(x_cols, Lx_cols)
@@ -670,16 +676,16 @@ xtdml_data_from_data_frame = function(df,
       #   stop("The `wg-approx` approach currently supports only one cluster column (e.g., individual ID).")
       # }
 
-      df_no_idx = df2 %>% select(all_of(c(x_cols_plus, y_col, d_cols)))
+      df_no_idx = df2 %>% dplyr::select(all_of(c(x_cols_plus, y_col, d_cols)))
 
       df_gm = df_no_idx %>%
-        summarise(across(everything(), mean, na.rm = TRUE))
+        summarise(dplyr::across(everything(), mean, na.rm = TRUE))
       gm_list = as.list(df_gm)
 
       df_mi = df2 %>%
-        group_by(across(all_of(panel_id))) %>%
-        mutate(across(all_of(c(x_cols_plus, y_col, d_cols)), ~ mean(.x, na.rm = TRUE), .names = "m.{col}")) %>%
-        ungroup()
+        dplyr::group_by(dplyr::across(all_of(panel_id))) %>%
+        dplyr::mutate(dplyr::across(all_of(c(x_cols_plus, y_col, d_cols)), ~ mean(.x, na.rm = TRUE), .names = "m.{col}")) %>%
+        dplyr::ungroup()
 
       var_names = c(x_cols_plus, y_col, d_cols)
       df_dm = df_no_idx
