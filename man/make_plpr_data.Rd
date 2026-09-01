@@ -2,60 +2,143 @@
 % Please edit documentation in R/dataset.R
 \name{make_plpr_data}
 \alias{make_plpr_data}
-\title{Simulated Data Frame}
+\title{Simulated Data Frame for the \code{xtdml} Package}
 \usage{
-make_plpr_data(n_obs = 500, t_per = 10, dim_x = 20, theta = 0.5, rho = 0.8)
+make_plpr_data(
+  n_obs = 500,
+  t_per = 8,
+  dim_x = 10,
+  theta = 0.5,
+  rho = 0.7,
+  rho_gamma = 0,
+  phi_x = 0.4,
+  phi_e = 0,
+  sigma_a = 2,
+  sigma_g = 1,
+  seed = NULL
+)
 }
 \arguments{
 \item{n_obs}{(\code{integer(1)}) \cr
-The number of cross-sectional observations (i) to simulate.}
+The number of cross-sectional units \eqn{i} to simulate. Default is 500.}
 
 \item{t_per}{(\code{integer(1)}) \cr
-The number of time periods (t) to simulate.}
+The number of time periods \eqn{t} to simulate. Default is 8. Values below
+4 leave too few effective periods per unit under FD.}
 
 \item{dim_x}{(\code{integer(1)}) \cr
-The number of covariates.}
+The total number of covariates. The first four are used in the nuisance
+functions; any additional columns act as noise covariates. Default is 10.}
 
 \item{theta}{(\code{numeric(1)}) \cr
-The value of the causal parameter.}
+The true value of the structural (causal) parameter \eqn{\theta_0}.
+Default is 0.5.}
 
 \item{rho}{(\code{numeric(1)}) \cr
-Parameter governing the relationship between the covariates and the unobserved
-individual heterogeneity. The value is chosen between 0 (pure random effect)
-and 1 (pure fixed effects).}
+Correlation between the outcome-side fixed effect \eqn{\alpha_i} and the
+shared unit-level component \eqn{F_i} of the covariates. Controls the
+strength of the endogeneity of \eqn{\alpha_i} with respect to
+\eqn{\bar{X}_i}. Should lie in \eqn{[0, 1]}. Default is 0.7.}
+
+\item{rho_gamma}{(\code{numeric(1)}) \cr
+Correlation between the treatment-side fixed effect \eqn{\gamma_i} and the
+outcome-side fixed effect \eqn{\alpha_i}. \eqn{\rho_\gamma = 0} yields
+uncorrelated random effects (under which pooled PLR is consistent), and
+\eqn{\rho_\gamma = 1} yields a strict fixed-effects setting (under which
+pooled PLR is inconsistent). Should lie in \eqn{[0, 1]}. Default is 0.}
+
+\item{phi_x}{(\code{numeric(1)}) \cr
+AR(1) coefficient governing the within-unit persistence of the covariates.
+Higher values (closer to 1) preserve identifying signal in
+first-differenced covariates and favour the FD-exact approach. Should lie
+in \eqn{[0, 1)}. Default is 0.4.}
+
+\item{phi_e}{(\code{numeric(1)}) \cr
+AR(1) coefficient governing the within-unit persistence of the
+idiosyncratic errors \eqn{U_{it}} and \eqn{V_{it}}. \eqn{\phi_e = 0}
+yields IID errors (under which WG and CRE are efficient), while
+\eqn{\phi_e \to 1} approaches a random-walk error structure (under which
+FD is efficient). Should lie in \eqn{[0, 1)}. Default is 0.}
+
+\item{sigma_a}{(\code{numeric(1)}) \cr
+Scale (standard deviation) of the outcome-side fixed effect \eqn{\alpha_i}.
+Default is 2.}
+
+\item{sigma_g}{(\code{numeric(1)}) \cr
+Scale (standard deviation) of the treatment-side fixed effect
+\eqn{\gamma_i}. Default is 1.}
+
+\item{seed}{(\code{integer(1)} or \code{NULL}) \cr
+Optional integer seed for reproducibility. If \code{NULL} (the default), the
+current state of the random number generator is used.}
 }
 \value{
-A data object.
+A \code{data.frame} with \code{n_obs * t_per} rows and the following columns:
+\describe{
+\item{\code{id}}{unit identifier, integer in \eqn{\{1, \ldots, n\_obs\}}.}
+\item{\code{time}}{time identifier, integer in \eqn{\{1, \ldots, t\_per\}}.}
+\item{\verb{X1, X2, ..., X<dim_x>}}{covariates.}
+\item{\code{y}}{outcome variable.}
+\item{\code{d}}{treatment variable.}
+}
 }
 \description{
-Generates data from a partially linear regression model for panel data with fixed effects
-similar to DGP3 (highly nonlinear) in Clarke and Polselli (2025).
+Generates data from a partially linear panel regression model with fixed
+effects, following the setting of Clarke and Polselli (2025) but with a
+tunable data-generating process designed to expose the differences among
+the panel data approaches implemented in \code{xtdml}.
 
-The data generating process is defined as
+The DGP is defined as
 
-\eqn{Y_{it} = \theta D_{it} + g_0(X_{it}) + \alpha_i + U_{it},}
-\eqn{D_{it} = m_0(X_{it}) + \gamma_i + V_{it},}
+\deqn{Y_{it} = 1 + \theta_0 D_{it} + g_0(X_{it}) + \alpha_i + U_{it},}
+\deqn{D_{it} = m_0(X_{it}) + \gamma_i + V_{it},}
 
-where \eqn{U_{it} \sim \mathcal{N}(0,1)}, \eqn{V_{it}  \sim \mathcal{N}(0,1)},
-\eqn{\alpha_i = \rho A_i + \sqrt{1-\rho^2} B_i} with
-\eqn{A_i\sim \mathcal{N}(3,3)}, \eqn{B_i\sim \mathcal{N}(0,1)}, and  \eqn{\gamma_i\sim \mathcal{N}(0,5)}.
+where \eqn{U_{it}} and \eqn{V_{it}} are AR(1) idiosyncratic errors with
+persistence \eqn{\phi_e} and stationary unit variance; \eqn{\alpha_i} is
+the outcome-side fixed effect; and \eqn{\gamma_i} is the treatment-side
+fixed effect. The two fixed effects are constructed as
 
-The covariates are distributed as \eqn{X_{it,p} \sim A_i + \mathcal{N}(0, 5)},
-where \eqn{p} is the number of covariates.
+\deqn{\alpha_i = \sigma_\alpha (\rho F_i + \sqrt{1-\rho^2} E_i),}
+\deqn{\gamma_i = \sigma_\gamma \left(\rho_\gamma \frac{\alpha_i}{\sigma_\alpha} + \sqrt{1-\rho_\gamma^2} H_i\right),}
 
-The nuisance functions are given by
+where \eqn{F_i, E_i, H_i \sim \mathcal{N}(0,1)} are mutually independent
+unit-level draws. The parameter \eqn{\rho} controls the correlation
+between \eqn{\alpha_i} and the individual mean of the covariates
+\eqn{\bar{X}_i}, while \eqn{\rho_\gamma} controls the correlation between
+the outcome- and treatment-side fixed effects: \eqn{\rho_\gamma = 0}
+corresponds to uncorrelated random effects and \eqn{\rho_\gamma = 1} to a
+strict fixed-effects specification.
 
-\eqn{m_0(X_{it}) = a_1 [X_{it,1} \times 1(X_{it,1}>0)] + a_2 [X_{it,1} \times X_{it,3}],}
-\eqn{g_0(X_{it}) = b_1 [X_{it,1} \times X_{it,3}] + b_2 [X_{it,3} \times 1(X_{it,3}>0)],}
+Covariates follow a unit-level AR(1) process with persistence \eqn{\phi_x}:
 
-with \eqn{a_1=b_2=0.25} and \eqn{a_2=b_1=0.5}.
+\deqn{X_{it,j} = F_i + \phi_x (X_{i,t-1,j} - F_i) + \eta_{itj}, \quad \eta_{itj} \sim \mathcal{N}(0,1),}
+
+initialised from the stationary marginal at \eqn{t = 1}. Higher \eqn{\phi_x}
+produces more persistent within-unit variation, which preserves signal in
+the first-differenced covariates and favours the FD-exact approach.
+
+The nuisance functions are smooth polynomial and trigonometric functions
+of the first four covariates:
+
+\deqn{m_0(X_{it}) = 0.5 \sin(X_{it,1}) + 0.3 X_{it,2} + 0.1 (X_{it,3}^2 - 1) + 0.15 X_{it,1} X_{it,4},}
+\deqn{g_0(X_{it}) = 0.4 \cos(X_{it,1}) + 0.5 X_{it,3} + 0.1 (X_{it,4}^2 - 1) + 0.15 X_{it,2} X_{it,3}.}
+
+These forms are smooth (no threshold indicators) and can be recovered by
+tree-based, penalised, and neural learners at moderate sample sizes.
 }
 \examples{
-df = make_plpr_data(n_obs = 500, t_per = 10, dim_x = 20, theta = 0.5, rho=0.8)
+# Default: uncorrelated random effects, IID errors
+df <- make_plpr_data(n_obs = 500, t_per = 8, dim_x = 10,
+                     theta = 0.5, rho_gamma = 0, seed = 1234)
 
-}
-\references{
-Clarke, P. S. and Polselli,  A. (2025). Double Machine Learning
-for Static Panel Models with Fixed Effects. Econometrics Journal.
-DOI: 10.1093/ectj/utaf011.
+# Strict fixed effects with persistent errors: FD-exact should be efficient
+df_fd <- make_plpr_data(n_obs = 500, t_per = 8, dim_x = 10,
+                        theta = 0.5, rho_gamma = 1,
+                        phi_e = 0.8, phi_x = 0.7, seed = 1234)
+
+# Correlated fixed effects, IID errors: pooled PLR is biased; CRE/WG efficient
+df_cre <- make_plpr_data(n_obs = 500, t_per = 8, dim_x = 10,
+                         theta = 0.5, rho_gamma = 0.5,
+                         phi_e = 0, phi_x = 0.4, seed = 1234)
+
 }

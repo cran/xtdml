@@ -569,33 +569,90 @@ xtdml_data_from_data_frame = function(df,
       assert_choice(transformX, valid_transformX)
     }
 
+    # Detect binary status of original Y and D (before transformation)
+    is_binary_vec = function(v) {
+      v_clean = stats::na.omit(v)
+      if (length(v_clean) == 0L) return(FALSE)
+      if (is.logical(v_clean)) return(TRUE)
+      if (is.factor(v_clean))  return(nlevels(v_clean) == 2L)
+      if (is.numeric(v_clean)) return(all(v_clean %in% c(0, 1)))
+      FALSE
+    }
+    y_binary_original = is_binary_vec(df[[y_col]])
+    d_binary_original = is_binary_vec(df[[d_cols]])
+
     dbar_col = NULL
+
+    non_numeric = x_cols[
+      !vapply(df[x_cols], is.numeric, logical(1))
+    ]
+
+    if (length(non_numeric) > 0) {
+      stop(
+        "All covariates in x_cols must be numeric. ",
+        "Factor, character, and other categorical variables are not supported. ",
+        "Problematic variables: ",
+        paste(non_numeric, collapse = ", "),
+        call. = FALSE
+      )
+    }
 
     # 1. Define set of X. Add L.x for FD, and (xbar,dbar) for CRE
     if(approach=="cre"){
       df = df %>%
-        dplyr::arrange(dplyr::across(all_of(c(panel_id, time_id)))) %>%
-        dplyr::group_by(dplyr::across(all_of(panel_id))) %>%
-        dplyr::mutate(dplyr::across(c(x_cols, d_cols), ~  mean(.x), .names = "m_{col}")) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(panel_id))) %>%
+        dplyr::mutate(dplyr::across(dplyr::all_of(c(x_cols, d_cols)),
+                                    ~ mean(.x, na.rm = TRUE),
+                                    .names = "m_{col}")) %>%
         dplyr::ungroup()
 
       Lx_cols = paste0("m_", x_cols)
       x_cols_plus = c(x_cols, Lx_cols)
       dbar_col = paste0("m_", d_cols)
 
-    } else if(approach=="fd-exact"){
+    } else if (approach == "fd-exact") {
+
+      # Validate panel time structure; allows irregular gaps (e.g. waves 1,3,5,7,8)
+      xtdml_check_time_structure(df, panel_id, time_id, approach)
+
       df = df %>%
-        dplyr::arrange(dplyr::across(all_of(c(panel_id, time_id)))) %>%
-        dplyr::group_by(dplyr::across(all_of(panel_id))) %>%
-        dplyr::mutate(dplyr::across(x_cols, ~  lag(.x), .names = "L.{col}"))   %>%
-        dplyr::mutate(dplyr::across(c(d_cols, y_col), ~ c(NA, diff(.x))))  %>%
+        dplyr::arrange(dplyr::across(dplyr::all_of(c(panel_id, time_id)))) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(panel_id))) %>%
+        dplyr::mutate(dplyr::across(dplyr::all_of(x_cols),
+                                    ~ dplyr::lag(.x), .names = "L.{col}")) %>%
+        dplyr::mutate(dplyr::across(dplyr::all_of(c(d_cols, y_col)),
+                                    ~ .x - dplyr::lag(.x))) %>%
         dplyr::mutate(first_obs = dplyr::row_number() == 1L) %>%
         dplyr::ungroup()
-      #complete_rows = complete.cases(df)
-      #df = df[complete_rows, ]
 
-      # Identify the first row per group after sorting
-      df <- df %>% dplyr::filter(!.data$first_obs) %>% dplyr::select(-.data$first_obs)
+      # Explicit NA check (replaces the commented-out complete.cases() lines)
+      lagged_x_cols = paste0("L.", x_cols)
+
+      na_rows = df %>%
+        dplyr::filter(!first_obs) %>%
+        dplyr::filter(dplyr::if_any(
+          dplyr::all_of(c(x_cols, lagged_x_cols, d_cols, y_col)), is.na
+        ))
+
+      if (nrow(na_rows) > 0) {
+        bad_units = unique(na_rows[[panel_id]])
+        stop(
+          sprintf(
+            "Missing values detected after first-differencing for unit(s): %s.
+            This usually means one or more interior observations for these units contain NA in
+            '%s', '%s', or the covariates '%s'. xtdml requires complete cases under the
+            fd-exact approach. Remove or impute missing values before calling
+            xtdml_data_from_data_frame(), or drop variables not observed at every wave.",
+            paste(utils::head(bad_units, 10), collapse = ", "),
+            y_col, paste(d_cols, collapse = ", "), paste(x_cols, collapse = ", ")
+          ),
+          call. = FALSE
+        )
+      }
+
+      df = df %>%
+        dplyr::filter(!first_obs) %>%
+        dplyr::select(-first_obs)
 
       Lx_cols = paste0("L.", x_cols)
       x_cols_plus = c(x_cols, Lx_cols)
@@ -672,19 +729,15 @@ xtdml_data_from_data_frame = function(df,
     # 3. Apply panel data transformation to transformed X
     if(approach=="wg-approx"){
 
-      # if (length(cluster_cols) != 1) {
-      #   stop("The `wg-approx` approach currently supports only one cluster column (e.g., individual ID).")
-      # }
-
-      df_no_idx = df2 %>% dplyr::select(all_of(c(x_cols_plus, y_col, d_cols)))
+      df_no_idx = df2 %>% dplyr::select(dplyr::all_of(c(x_cols_plus, y_col, d_cols)))
 
       df_gm = df_no_idx %>%
-        summarise(dplyr::across(everything(), mean, na.rm = TRUE))
+        summarise(dplyr::across(everything(), \(x) mean(x, na.rm = TRUE)))
       gm_list = as.list(df_gm)
 
       df_mi = df2 %>%
-        dplyr::group_by(dplyr::across(all_of(panel_id))) %>%
-        dplyr::mutate(dplyr::across(all_of(c(x_cols_plus, y_col, d_cols)), ~ mean(.x, na.rm = TRUE), .names = "m.{col}")) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(panel_id))) %>%
+        dplyr::mutate(dplyr::across(dplyr::all_of(c(x_cols_plus, y_col, d_cols)), ~ mean(.x, na.rm = TRUE), .names = "m.{col}")) %>%
         dplyr::ungroup()
 
       var_names = c(x_cols_plus, y_col, d_cols)
@@ -705,6 +758,7 @@ xtdml_data_from_data_frame = function(df,
     }else{
       df.transf = as.data.frame(df2)
     }
+
     data = xtdml_data$new(df.transf,
                           x_cols = x_cols_plus,
                           y_col  = y_col,
@@ -715,6 +769,9 @@ xtdml_data_from_data_frame = function(df,
                           cluster_cols = cluster_cols,
                           approach = approach,
                           transformX = transformX)
+
+    attr(data, "y_binary_original") = y_binary_original
+    attr(data, "d_binary_original") = d_binary_original
 
     return(data)
   }

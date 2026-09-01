@@ -11,52 +11,63 @@ import(mlr3tuning)
 importFrom(MLmetrics,RMSE)
 importFrom(R6,R6Class)
 importFrom(clusterGeneration,genPositiveDefMat)
-importFrom(data.table,as.data.table)
-importFrom(data.table,data.table)
-importFrom(data.table,setnafill)
-importFrom(dplyr,across)
-importFrom(dplyr,all_of)
-importFrom(dplyr,everything)
-importFrom(dplyr,group_by)
-importFrom(dplyr,mutate)
-importFrom(dplyr,select)
-importFrom(dplyr,summarise)
-importFrom(dplyr,ungroup)
-importFrom(graphics,abline)
-importFrom(graphics,mtext)
-importFrom(graphics,par)
-importFrom(graphics,plot)
+importFrom(data.table,
+  as.data.table,
+  data.table,
+  setnafill
+)
+importFrom(dplyr,
+  across,
+  all_of,
+  everything,
+  group_by,
+  mutate,
+  select,
+  summarise,
+  ungroup
+)
+importFrom(graphics,
+  abline,
+  mtext,
+  par,
+  plot
+)
 importFrom(magrittr,"%>%")
-importFrom(mlr3,Task)
-importFrom(mlr3,TaskClassif)
-importFrom(mlr3,TaskRegr)
-importFrom(mlr3,default_measures)
-importFrom(mlr3,lrn)
-importFrom(mlr3,msr)
-importFrom(mlr3,resample)
-importFrom(mlr3,rsmp)
+importFrom(mlr3,
+  Task,
+  TaskClassif,
+  TaskRegr,
+  default_measures,
+  lrn,
+  msr,
+  resample,
+  rsmp
+)
 importFrom(mlr3learners,LearnerRegrLM)
 importFrom(mlr3misc,insert_named)
 importFrom(mvtnorm,rmvnorm)
 importFrom(readstata13,read.dta13)
 importFrom(rlang,.data)
-importFrom(stats,complete.cases)
-importFrom(stats,filter)
-importFrom(stats,formula)
-importFrom(stats,median)
-importFrom(stats,model.matrix)
-importFrom(stats,p.adjust)
-importFrom(stats,p.adjust.methods)
-importFrom(stats,pnorm)
-importFrom(stats,printCoefmat)
-importFrom(stats,qnorm)
-importFrom(stats,qqline)
-importFrom(stats,qqnorm)
-importFrom(stats,quantile)
-importFrom(stats,rexp)
-importFrom(stats,rnorm)
-importFrom(stats,runif)
-importFrom(stats,toeplitz)
-importFrom(utils,compareVersion)
-importFrom(utils,packageVersion)
-importFrom(utils,read.table)
+importFrom(stats,
+  complete.cases,
+  formula,
+  median,
+  model.matrix,
+  p.adjust,
+  p.adjust.methods,
+  pnorm,
+  printCoefmat,
+  qnorm,
+  qqline,
+  qqnorm,
+  quantile,
+  rexp,
+  rnorm,
+  runif,
+  toeplitz
+)
+importFrom(utils,
+  compareVersion,
+  packageVersion,
+  read.table
+)

@@ -156,6 +156,34 @@ xtdml_plr <- R6Class("xtdml_plr",
                            }
                          }
 
+                         # ---- Validate learner task type against panel approach + binary status ----
+                         approach <- data$approach
+                         y_bin <- isTRUE(attr(data, "y_binary_original"))
+                         d_bin <- isTRUE(attr(data, "d_binary_original"))
+
+                         if (approach %in% c("fd-exact", "wg-approx")) {
+                           if (y_bin && ml_l$task_type == "classif") {
+                             stop(sprintf("A classification learner was supplied to `ml_l`,
+                             but the outcome variable '%s' is binary in the original data
+                             and the '%s' approach transforms it into a non-binary support (%s).
+                             Specify a regression learner instead. Classification learners
+                             are admissible only under the 'cre' approach.",
+                               data$y_col, approach,
+                               if (approach == "fd-exact") "{-1, 0, 1}" else "continuous (within-group demeaned)"
+                             ), call. = FALSE)
+                           }
+                           if (d_bin && ml_m$task_type == "classif") {
+                             stop(sprintf("A classification learner was supplied to `ml_m`,
+                             but the outcome variable '%s' is binary in the original data
+                             and the '%s' approach transforms it into a non-binary support (%s).
+                             Specify a regression learner instead. Classification learners
+                             are admissible only under the 'cre' approach.",
+                               data$d_cols, approach,
+                               if (approach == "fd-exact") "{-1, 0, 1}" else "continuous (within-group demeaned)"
+                             ), call. = FALSE)
+                           }
+                         }
+
                          super$initialize_double_ml(
                            data,
                            n_folds,

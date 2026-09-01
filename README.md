@@ -28,20 +28,11 @@ where
 
 > [!CAUTION]
 > 1. The package has been renamed `xtdml` from `XTDML`!
-<<<<<<< HEAD
 > 2. Major changes in xtdml_data_from_data_frame() function have been introduced since version 0.1.7 and various bugs corrected.
 > 3. `tune_settings` have been updated after `mlr3tuning` (>= 0.20.0),  `mlr3tuning` (>= 0.19.0), `bbotk` (>= 1.6.0)
-> 4. Previous versions of the package allowed for **treatment endogeneity** in the partially linear panel regression model. This option has been *temporally removed*, but we are currently working on including IV estimation and weak IV tests in the current version of the `xtdml` package. (Panel IV DML *coming soon*) 
+> 4. Previous versions of the package allowed for **treatment endogeneity** in the partially linear panel regression model. This option has been *temporally removed*, but we are currently working on including IV estimation and weak IV tests in the current version of the `xtdml` package. (Panel IV DML *coming soon*)
 > 5. With the current version of the package it is **no longer possible** to choose the **hybrid approach**; this is consistent with the published version of the article.
-=======
-> 
-> 2. Previous versions of the package allowed for **treatment endogeneity** in the partially linear panel regression model. This option has been *temporally removed*, but we are currently working on including IV estimation and weak IV tests in the current version of the `xtdml` package. (Panel IV DML *coming soon*)
-> 
-> 3. With the current version of the package it is **no longer possible** to choose the **hybrid approach**; this is consistent with the published version of the article.
->    
-> 4. Vignettes will be added soon.
-
->>>>>>> 52433c7 (Version 0.1.12)
+> 6. Vignettes will be added soon.
 
 ## Installing the package
 The installation of `xtdml` can be done from CRAN using
@@ -54,8 +45,6 @@ or via devtools from GitHub for the latest version
 library(devtools)
 install_github("POLSEAN/xtdml")
 ```
-
-<<<<<<< HEAD
 
 ## Sample Code
 
@@ -177,10 +166,7 @@ for (approach in approaches){
 }
 
 ```
- 
 
-=======
->>>>>>> 52433c7 (Version 0.1.12)
 ## References
 Bach, P., Chernozhukov, V., Kurz, M. S., Spindler, M. and Klaassen, S. (2024), DoubleML - An Object-Oriented Implementation of Double Machine Learning in R, *Journal of Statistical Software*, 108(3): 1-56, doi:10.18637/jss.v108.i03.
 
@@ -191,12 +177,6 @@ Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W.
 
 Clarke, P. S. and Polselli,  A. (2025). Double Machine Learning for Static Panel Models with Fixed Effects. *The Econometrics Journal*. DOI: 10.1093/ectj/utaf011.
 
-<<<<<<< HEAD
-Polselli A (2025). **xtdml**: Double Machine Learning for Static Panel Models with Fixed Effects. R package version 0.1.5, URL https://cran.r-project.org/web/packages/xtdml/
+Polselli A (2025). **xtdml**: Double Machine Learning for Static Panel Models with Fixed Effects. R package version 0.1.12, URL https://cran.r-project.org/web/packages/xtdml/
 index.html
-=======
-Polselli A (2025). **xtdml**: Double Machine Learning for Static Panel Models with Fixed Ef-
-fects. R package version 0.1.5, URL https://cran.r-project.org/web/packages/xtdml/
-index.html 
->>>>>>> 52433c7 (Version 0.1.12)
 

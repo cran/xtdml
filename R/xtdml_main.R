@@ -10,8 +10,8 @@
 #'  learning methods based on the panel data approach chosen by the user,
 #'  and computation of the Neyman-orthogonal score functions.
 #'
-#' `xtdml` builds on the object-oriented architecture of `DoubleML` (Bach et al., 2024), using
-#' the 'mlr3' ecosystem and the 'R6' package. `xtdml` follows most of the notation of `DoubleML`.
+#' `xtdml` follows the object-oriented architecture of `DoubleML` (Bach et al., 2024) and most of its notation,
+#' and uses the 'mlr3' ecosystem and the 'R6' package.
 #'
 #' @importFrom R6 R6Class
 #'
@@ -1242,13 +1242,15 @@ xtdml = R6Class("xtdml",
 
       assert(
         check_character(learner, max.len = 1),
-        check_class(learner, "Learner"))
+        check_class(learner, "Learner")
+      )
 
-      if (test_class(learner, "AutoTuner")) {
-        stop(paste0(
-          "Learners of class 'AutoTuner' are not supported."
-        ))
-      }
+      # allowed in v0.1.13
+      # if (test_class(learner, "AutoTuner")) {
+      #   stop(paste0(
+      #     "Learners of class 'AutoTuner' are not supported."
+      #   ))
+      # }
       if (is.character(learner)) {
         # warning("Learner provision by character() will be deprecated in the
         # future.")

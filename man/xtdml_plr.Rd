@@ -58,46 +58,45 @@ obj_xtdml$fit()
 
 }
 \seealso{
-Other xtdml: 
+Other xtdml:
 \code{\link{xtdml}}
 }
 \concept{xtdml}
 \section{Super class}{
-\code{\link[xtdml:xtdml]{xtdml::xtdml}} -> \code{xtdml_plr}
+\code{\link[xtdml:xtdml]{xtdml}} -> \code{xtdml_plr}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-xtdml_plr-new}{\code{xtdml_plr$new()}}
-\item \href{#method-xtdml_plr-set_ml_nuisance_params}{\code{xtdml_plr$set_ml_nuisance_params()}}
-\item \href{#method-xtdml_plr-tune}{\code{xtdml_plr$tune()}}
-\item \href{#method-xtdml_plr-clone}{\code{xtdml_plr$clone()}}
+  \itemize{
+    \item \href{#method-xtdml_plr-initialize}{\code{xtdml_plr$new()}}
+    \item \href{#method-xtdml_plr-set_ml_nuisance_params}{\code{xtdml_plr$set_ml_nuisance_params()}}
+    \item \href{#method-xtdml_plr-tune}{\code{xtdml_plr$tune()}}
+    \item \href{#method-xtdml_plr-clone}{\code{xtdml_plr$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="confint"><a href='../../xtdml/html/xtdml.html#method-xtdml-confint'><code>xtdml::xtdml$confint()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="fit"><a href='../../xtdml/html/xtdml.html#method-xtdml-fit'><code>xtdml::xtdml$fit()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="get_panel_info"><a href='../../xtdml/html/xtdml.html#method-xtdml-get_panel_info'><code>xtdml::xtdml$get_panel_info()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="get_params"><a href='../../xtdml/html/xtdml.html#method-xtdml-get_params'><code>xtdml::xtdml$get_params()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="learner_names"><a href='../../xtdml/html/xtdml.html#method-xtdml-learner_names'><code>xtdml::xtdml$learner_names()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="params_names"><a href='../../xtdml/html/xtdml.html#method-xtdml-params_names'><code>xtdml::xtdml$params_names()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="plot"><a href='../../xtdml/html/xtdml.html#method-xtdml-plot'><code>xtdml::xtdml$plot()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="predict"><a href='../../xtdml/html/xtdml.html#method-xtdml-predict'><code>xtdml::xtdml$predict()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="print"><a href='../../xtdml/html/xtdml.html#method-xtdml-print'><code>xtdml::xtdml$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="split_samples"><a href='../../xtdml/html/xtdml.html#method-xtdml-split_samples'><code>xtdml::xtdml$split_samples()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="summary"><a href='../../xtdml/html/xtdml.html#method-xtdml-summary'><code>xtdml::xtdml$summary()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="confint"><a href='../../xtdml/html/xtdml.html#method-xtdml-confint'><code>xtdml$confint()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="fit"><a href='../../xtdml/html/xtdml.html#method-xtdml-fit'><code>xtdml$fit()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="get_panel_info"><a href='../../xtdml/html/xtdml.html#method-xtdml-get_panel_info'><code>xtdml$get_panel_info()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="get_params"><a href='../../xtdml/html/xtdml.html#method-xtdml-get_params'><code>xtdml$get_params()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="learner_names"><a href='../../xtdml/html/xtdml.html#method-xtdml-learner_names'><code>xtdml$learner_names()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="params_names"><a href='../../xtdml/html/xtdml.html#method-xtdml-params_names'><code>xtdml$params_names()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="plot"><a href='../../xtdml/html/xtdml.html#method-xtdml-plot'><code>xtdml$plot()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="predict"><a href='../../xtdml/html/xtdml.html#method-xtdml-predict'><code>xtdml$predict()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="print"><a href='../../xtdml/html/xtdml.html#method-xtdml-print'><code>xtdml$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="split_samples"><a href='../../xtdml/html/xtdml.html#method-xtdml-split_samples'><code>xtdml$split_samples()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="xtdml" data-topic="xtdml" data-id="summary"><a href='../../xtdml/html/xtdml.html#method-xtdml-summary'><code>xtdml$summary()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-xtdml_plr-new"></a>}}
-\if{latex}{\out{\hypertarget{method-xtdml_plr-new}{}}}
-\subsection{Method \code{new()}}{
-Creates a new instance of this R6 class.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml_plr$new(
+\if{html}{\out{<a id="method-xtdml_plr-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-xtdml_plr-initialize}{}}}
+\subsection{\code{xtdml_plr$new()}}{
+  Creates a new instance of this R6 class.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml_plr$new(
   data,
   ml_l,
   ml_m,
@@ -108,17 +107,16 @@ Creates a new instance of this R6 class.
   dml_procedure = "dml2",
   draw_sample_splitting = TRUE,
   apply_cross_fitting = TRUE
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{data}}{(\code{xtdml_data}) \cr
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{data}}{(\code{xtdml_data}) \cr
 The \code{xtdml_data} object providing the data and specifying the
 variables of the causal model.}
-
-\item{\code{ml_l}}{(\code{\link[mlr3:LearnerRegr]{LearnerRegr}},
+      \item{\code{ml_l}}{(\code{\link[mlr3:LearnerRegr]{LearnerRegr}},
 \code{\link[mlr3:Learner]{Learner}}, \code{character(1)}) \cr
 A learner of the class \code{\link[mlr3:LearnerRegr]{LearnerRegr}}, which is
 available from \href{https://mlr3.mlr-org.com/index.html}{mlr3} or its
@@ -126,12 +124,11 @@ extension packages \href{https://mlr3learners.mlr-org.com/}{mlr3learners} or
 \href{https://mlr3extralearners.mlr-org.com/}{mlr3extralearners}.
 Alternatively, a \code{\link[mlr3:Learner]{Learner}} object with public field
 \code{task_type = "regr"} can be passed, for example of class
-\code{\link[mlr3pipelines:mlr_learners_graph]{GraphLearner}}. The learner can possibly
+\code{\link[mlr3pipelines:GraphLearner]{GraphLearner}}. The learner can possibly
 be passed with specified parameters, for example
 \code{lrn("regr.cv_glmnet", s = "lambda.min")}. \cr
 \code{ml_l} refers to the nuisance function \eqn{l_0(X) = E[Y|X]}.}
-
-\item{\code{ml_m}}{(\code{\link[mlr3:LearnerRegr]{LearnerRegr}},
+      \item{\code{ml_m}}{(\code{\link[mlr3:LearnerRegr]{LearnerRegr}},
 \code{\link[mlr3:LearnerClassif]{LearnerClassif}}, \code{\link[mlr3:Learner]{Learner}},
 \code{character(1)}) \cr
 A learner of the class \code{\link[mlr3:LearnerRegr]{LearnerRegr}}, which is
@@ -144,10 +141,9 @@ For binary treatment variables, an object of the class
 Alternatively, a \code{\link[mlr3:Learner]{Learner}} object with public field
 \code{task_type = "regr"} or \code{task_type = "classif"} can be passed,
 respectively, for example of class
-\code{\link[mlr3pipelines:mlr_learners_graph]{GraphLearner}}. \cr
+\code{\link[mlr3pipelines:GraphLearner]{GraphLearner}}. \cr
 \code{ml_m} refers to the nuisance function \eqn{m_0(X) = E[D|X]}.}
-
-\item{\code{ml_g}}{(\code{\link[mlr3:LearnerRegr]{LearnerRegr}},
+      \item{\code{ml_g}}{(\code{\link[mlr3:LearnerRegr]{LearnerRegr}},
 \code{\link[mlr3:Learner]{Learner}}, \code{character(1)}) \cr
 A learner of the class \code{\link[mlr3:LearnerRegr]{LearnerRegr}}, which is
 available from \href{https://mlr3.mlr-org.com/index.html}{mlr3} or its
@@ -155,111 +151,105 @@ extension packages \href{https://mlr3learners.mlr-org.com/}{mlr3learners} or
 \href{https://mlr3extralearners.mlr-org.com/}{mlr3extralearners}.
 Alternatively, a \code{\link[mlr3:Learner]{Learner}} object with public field
 \code{task_type = "regr"} can be passed, for example of class
-\code{\link[mlr3pipelines:mlr_learners_graph]{GraphLearner}}. The learner can possibly
+\code{\link[mlr3pipelines:GraphLearner]{GraphLearner}}. The learner can possibly
 be passed with specified parameters, for example
 \code{lrn("regr.cv_glmnet", s = "lambda.min")}. \cr
 \code{ml_g} refers to the nuisance function \eqn{g_0(X) = E[Y - D\theta_0|X]}.
 Note: The learner \code{ml_g} is only required for the score \code{'IV-type'}.
 Optionally, it can be specified and estimated for callable scores.}
-
-\item{\code{n_folds}}{(\code{integer(1)})\cr
+      \item{\code{n_folds}}{(\code{integer(1)})\cr
 Number of folds. Default is \code{5}.}
-
-\item{\code{n_rep}}{(\code{integer(1)}) \cr
+      \item{\code{n_rep}}{(\code{integer(1)}) \cr
 Number of repetitions for the sample splitting. Default is \code{1}.}
-
-\item{\code{score}}{(\code{character(1)}) \cr
+      \item{\code{score}}{(\code{character(1)}) \cr
 A \code{character(1)} (\code{"orth-PO"} or \code{"orth-IV"}).
 \code{"orth-PO"} is Neyman-orthogonal score with the partialling-out formula.
 \code{"orth-IV"} is Neyman-orthogonal score with the IV-type formula.
 Default is \code{"orth-PO"}.}
-
-\item{\code{dml_procedure}}{(\code{character(1)}) \cr
+      \item{\code{dml_procedure}}{(\code{character(1)}) \cr
 A \code{character(1)} (\code{"dml1"} or \code{"dml2"}) specifying the double machine
 learning algorithm. Default is \code{"dml2"}.}
-
-\item{\code{draw_sample_splitting}}{(\code{logical(1)}) \cr
+      \item{\code{draw_sample_splitting}}{(\code{logical(1)}) \cr
 Indicates whether the sample splitting should be drawn during
 initialization of the object. Default is \code{TRUE}.}
-
-\item{\code{apply_cross_fitting}}{(\code{logical(1)}) \cr
+      \item{\code{apply_cross_fitting}}{(\code{logical(1)}) \cr
 Indicates whether cross-fitting should be applied. Default is \code{TRUE}.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml_plr-set_ml_nuisance_params"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml_plr-set_ml_nuisance_params}{}}}
-\subsection{Method \code{set_ml_nuisance_params()}}{
-Sets hyperparameters for the nuisance models.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml_plr$set_ml_nuisance_params(
+\subsection{\code{xtdml_plr$set_ml_nuisance_params()}}{
+  Sets hyperparameters for the nuisance models.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml_plr$set_ml_nuisance_params(
   learner = NULL,
   treat_var = NULL,
   params,
   set_fold_specific = FALSE
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{learner}}{(\code{character(1)}) \cr
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{learner}}{(\code{character(1)}) \cr
 The nuisance model/learner (see method \code{params_names}).}
-
-\item{\code{treat_var}}{(\code{character(1)}) \cr
+      \item{\code{treat_var}}{(\code{character(1)}) \cr
 The treatment varaible (hyperparameters can be set treatment-variable
 specific).}
-
-\item{\code{params}}{(named \code{list()}) \cr
+      \item{\code{params}}{(named \code{list()}) \cr
 A named \code{list()} with estimator parameters. Parameters are used for all
 folds by default. Alternatively, parameters can be passed in a
 fold-specific way if option  \code{fold_specific}is \code{TRUE}. In this case, the
 outer list needs to be of length \code{n_rep} and the inner list of length
 \code{n_folds}.}
-
-\item{\code{set_fold_specific}}{(\code{logical(1)}) \cr
+      \item{\code{set_fold_specific}}{(\code{logical(1)}) \cr
 Indicates if the parameters passed in \code{params_theta} should be passed in
 fold-specific way. Default is \code{FALSE}. If \code{TRUE}, the outer list needs
 to be of length \code{n_rep} and the inner list of length \code{n_folds}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    self
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-self
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml_plr-tune"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml_plr-tune}{}}}
-\subsection{Method \code{tune()}}{
-Conducts hyperparameter-tuning.
+\subsection{\code{xtdml_plr$tune()}}{
+  Conducts hyperparameter-tuning.
 
 The hyperparameter-tuning is performed using the tuning methods provided
 in the \href{https://mlr3tuning.mlr-org.com/}{mlr3tuning} package. For more
 information on tuning in \href{https://mlr3.mlr-org.com/}{mlr3}, we refer to
 the section on parameter tuning in the
 \href{https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html}{mlr3 book}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml_plr$tune(
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml_plr$tune(
   param_set,
   tune_settings = list(n_folds_tune = 5, rsmp_tune = mlr3::rsmp("cv", folds = 5), measure
     = NULL, terminator = mlr3tuning::trm("evals", n_evals = 20), algorithm =
     mlr3tuning::tnr("grid_search"), resolution = 5),
   tune_on_folds = FALSE
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{param_set}}{(named \code{list()}) \cr
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{param_set}}{(named \code{list()}) \cr
 A named \code{list} with a parameter grid for each nuisance model/learner
 (see method \code{learner_names()}). The parameter grid must be an object of
 class \link[paradox:ParamSet]{ParamSet}.}
-
-\item{\code{tune_settings}}{(named \code{list()}) \cr
+      \item{\code{tune_settings}}{(named \code{list()}) \cr
 A named \code{list()} with arguments passed to the hyperparameter-tuning with
 \href{https://mlr3tuning.mlr-org.com/}{mlr3tuning} to set up
 a tuning instance using \code{mlr3tuning::TuningInstanceBatchSingleCrit$new()} (see the mlr3tuning package).
@@ -288,7 +278,7 @@ If not specified by the user, default is set to \code{5}.
 \item \code{measure} (\code{NULL}, named \code{list()}, optional) \cr
 Named list containing the measures used for parameter tuning. Entries in
 list must either be \link[mlr3:Measure]{Measure} objects or keys to be
-passed to passed to \link[mlr3:mlr_sugar]{msr()}. The names of the entries must
+passed to passed to \link[mlr3:msr]{msr()}. The names of the entries must
 match the learner names (see method \code{learner_names()}). If set to \code{NULL},
 default measures are used, i.e., \code{"regr.mse"} for continuous outcome
 variables and \code{"classif.ce"} for binary outcomes.
@@ -297,32 +287,34 @@ dictionary to specify  the tuning algorithm used in
 \link[mlr3tuning:tnr]{tnr()}. \code{resolution} is passed as an argument to
 \link[mlr3tuning:tnr]{tnr()}.
 }}
-
-\item{\code{tune_on_folds}}{(\code{logical(1)}) \cr
+      \item{\code{tune_on_folds}}{(\code{logical(1)}) \cr
 Indicates whether the tuning should be done fold-specific or globally.
 Default is \code{FALSE}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    self
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-self
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml_plr-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml_plr-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml_plr$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{xtdml_plr$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml_plr$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

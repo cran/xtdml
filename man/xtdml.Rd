@@ -16,239 +16,246 @@ using double machine learning  (Clarke and Polselli, 2025).
 learning methods based on the panel data approach chosen by the user,
 and computation of the Neyman-orthogonal score functions.
 
-\code{xtdml} builds on the object-oriented architecture of \code{DoubleML} (Bach et al., 2024), using
-the 'mlr3' ecosystem and the 'R6' package. \code{xtdml} follows most of the notation of \code{DoubleML}.
+\code{xtdml} follows the object-oriented architecture of \code{DoubleML} (Bach et al., 2024) and most of its notation,
+and uses the 'mlr3' ecosystem and the 'R6' package.
 }
 \seealso{
-Other xtdml: 
+Other xtdml:
 \code{\link{xtdml_plr}}
 }
 \concept{xtdml}
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{all_coef_theta}}{(\code{matrix()}) \cr
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{all_coef_theta}}{(\code{matrix()}) \cr
 Estimates of the causal parameter(s) \code{"theta"} for the \code{n_rep} different sample
 splits after calling \code{fit()}.}
 
-\item{\code{all_dml1_coef_theta}}{(\code{array()}) \cr
+    \item{\code{all_dml1_coef_theta}}{(\code{array()}) \cr
 Estimates of the causal parameter(s) \code{"theta"} for the \code{n_rep} different sample
 splits after calling \code{fit()} with \code{dml_procedure = "dml1"}.}
 
-\item{\code{all_se_theta}}{(\code{matrix()}) \cr
+    \item{\code{all_se_theta}}{(\code{matrix()}) \cr
 Standard errors of the causal parameter(s) \code{"theta"} for the \code{n_rep} different
 sample splits after calling \code{fit()}.}
 
-\item{\code{all_model_rmse}}{(\code{matrix()}) \cr
+    \item{\code{all_model_rmse}}{(\code{matrix()}) \cr
 Model root-mean-squared-error.}
 
-\item{\code{apply_cross_fitting}}{(\code{logical(1)}) \cr
+    \item{\code{apply_cross_fitting}}{(\code{logical(1)}) \cr
 Indicates whether cross-fitting should be applied. Default is \code{TRUE}.}
 
-\item{\code{coef_theta}}{(\code{numeric()}) \cr
+    \item{\code{coef_theta}}{(\code{numeric()}) \cr
 Estimates for the causal parameter(s) \code{"theta"} after calling \code{fit()}.}
 
-\item{\code{data}}{(\code{\link[data.table:data.table]{data.table}})\cr
+    \item{\code{data}}{(\code{\link[data.table:data.table]{data.table}})\cr
 Data object.}
 
-\item{\code{dml_procedure}}{(\code{character(1)}) \cr
+    \item{\code{dml_procedure}}{(\code{character(1)}) \cr
 A \code{character()} (\code{"dml1"} or \code{"dml2"}) specifying the double machine
 learning algorithm. Default is \code{"dml2"}.}
 
-\item{\code{draw_sample_splitting}}{(\code{logical(1)}) \cr
+    \item{\code{draw_sample_splitting}}{(\code{logical(1)}) \cr
 Indicates whether the sample splitting should be drawn during
 initialization of the object. Default is \code{TRUE}.}
 
-\item{\code{learner}}{(named \code{list()}) \cr
+    \item{\code{learner}}{(named \code{list()}) \cr
 The machine learners for the nuisance functions.}
 
-\item{\code{n_folds}}{(\code{integer(1)}) \cr
+    \item{\code{n_folds}}{(\code{integer(1)}) \cr
 Number of folds. Default is \code{5}.}
 
-\item{\code{n_rep}}{(\code{integer(1)}) \cr
+    \item{\code{n_rep}}{(\code{integer(1)}) \cr
 Number of repetitions for the sample splitting. Default is \code{1}.}
 
-\item{\code{params}}{(named \code{list()}) \cr
+    \item{\code{params}}{(named \code{list()}) \cr
 The hyperparameters of the learners.}
 
-\item{\code{psi_theta}}{(\code{array()}) \cr
+    \item{\code{psi_theta}}{(\code{array()}) \cr
 Value of the score function
 \eqn{\psi(W;\theta_0,\eta_0)=-\psi_a(W;\eta_0) \theta_0 + \psi_b(W;\eta_0)}
 after calling \code{fit()}.}
 
-\item{\code{psi_theta_a}}{(\code{array()}) \cr
+    \item{\code{psi_theta_a}}{(\code{array()}) \cr
 Value of the score function component \eqn{\psi_a(W;\eta_0)} after
 calling \code{fit()}.}
 
-\item{\code{psi_theta_b}}{(\code{array()}) \cr
+    \item{\code{psi_theta_b}}{(\code{array()}) \cr
 Value of the score function component \eqn{\psi_b(W;\eta_0)} after
 calling \code{fit()}.}
 
-\item{\code{res_y}}{(\code{array()}) \cr
+    \item{\code{res_y}}{(\code{array()}) \cr
 Residual of output equation}
 
-\item{\code{res_d}}{(\code{array()}) \cr
+    \item{\code{res_d}}{(\code{array()}) \cr
 Residual of treatment equation}
 
-\item{\code{predictions}}{(\code{array()}) \cr
+    \item{\code{predictions}}{(\code{array()}) \cr
 Predictions of the nuisance models after calling
 \code{fit(store_predictions=TRUE)}.}
 
-\item{\code{targets}}{(\code{array()}) \cr
+    \item{\code{targets}}{(\code{array()}) \cr
 Targets of the nuisance models after calling
 \code{fit(store_predictions=TRUE)}.}
 
-\item{\code{rmses}}{(\code{array()}) \cr
+    \item{\code{rmses}}{(\code{array()}) \cr
 The root-mean-squared-errors of the nuisance parameters}
 
-\item{\code{all_model_mse}}{(\code{array()}) \cr
+    \item{\code{all_model_mse}}{(\code{array()}) \cr
 Collection of all mean-squared-errors of the model}
 
-\item{\code{model_rmse}}{(\code{array()}) \cr
+    \item{\code{model_rmse}}{(\code{array()}) \cr
 The root-mean-squared-errors of the model}
 
-\item{\code{models}}{(\code{array()}) \cr
+    \item{\code{models}}{(\code{array()}) \cr
 The fitted nuisance models after calling
 \code{fit(store_models=TRUE)}.}
 
-\item{\code{pval_theta}}{(\code{numeric()}) \cr
+    \item{\code{pval_theta}}{(\code{numeric()}) \cr
 p-values for the causal parameter(s) \code{"theta"} after calling \code{fit()}.}
 
-\item{\code{score}}{(\code{character(1)}) \cr
+    \item{\code{score}}{(\code{character(1)}) \cr
 A \code{character(1)}  specifying the score function among \code{"orth-PO"}, \code{"orth-IV"}.
 Default is "\code{orth-PO}".}
 
-\item{\code{se_theta}}{(\code{numeric()}) \cr
+    \item{\code{se_theta}}{(\code{numeric()}) \cr
 Standard errors for the causal parameter(s) \code{"theta"} after calling \code{fit()}.}
 
-\item{\code{smpls}}{(\code{list()}) \cr
+    \item{\code{smpls}}{(\code{list()}) \cr
 The partition used for cross-fitting.}
 
-\item{\code{smpls_cluster}}{(\code{list()}) \cr
+    \item{\code{smpls_cluster}}{(\code{list()}) \cr
 The partition used for cross-fitting.
 smpl is at cluster-var}
 
-\item{\code{t_stat_theta}}{(\code{numeric()}) \cr
+    \item{\code{t_stat_theta}}{(\code{numeric()}) \cr
 t-statistics for the causal parameter(s)  \code{"theta"} after calling \code{fit()}.}
 
-\item{\code{tuning_res_theta}}{(named \code{list()}) \cr
+    \item{\code{tuning_res_theta}}{(named \code{list()}) \cr
 Results from hyperparameter tuning.}
-}
-\if{html}{\out{</div>}}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-xtdml-new}{\code{xtdml$new()}}
-\item \href{#method-xtdml-print}{\code{xtdml$print()}}
-\item \href{#method-xtdml-fit}{\code{xtdml$fit()}}
-\item \href{#method-xtdml-split_samples}{\code{xtdml$split_samples()}}
-\item \href{#method-xtdml-tune}{\code{xtdml$tune()}}
-\item \href{#method-xtdml-summary}{\code{xtdml$summary()}}
-\item \href{#method-xtdml-plot}{\code{xtdml$plot()}}
-\item \href{#method-xtdml-predict}{\code{xtdml$predict()}}
-\item \href{#method-xtdml-confint}{\code{xtdml$confint()}}
-\item \href{#method-xtdml-learner_names}{\code{xtdml$learner_names()}}
-\item \href{#method-xtdml-params_names}{\code{xtdml$params_names()}}
-\item \href{#method-xtdml-set_ml_nuisance_params}{\code{xtdml$set_ml_nuisance_params()}}
-\item \href{#method-xtdml-get_params}{\code{xtdml$get_params()}}
-\item \href{#method-xtdml-get_panel_info}{\code{xtdml$get_panel_info()}}
-\item \href{#method-xtdml-clone}{\code{xtdml$clone()}}
-}
+  \itemize{
+    \item \href{#method-xtdml-initialize}{\code{xtdml$new()}}
+    \item \href{#method-xtdml-print}{\code{xtdml$print()}}
+    \item \href{#method-xtdml-fit}{\code{xtdml$fit()}}
+    \item \href{#method-xtdml-split_samples}{\code{xtdml$split_samples()}}
+    \item \href{#method-xtdml-tune}{\code{xtdml$tune()}}
+    \item \href{#method-xtdml-summary}{\code{xtdml$summary()}}
+    \item \href{#method-xtdml-plot}{\code{xtdml$plot()}}
+    \item \href{#method-xtdml-predict}{\code{xtdml$predict()}}
+    \item \href{#method-xtdml-confint}{\code{xtdml$confint()}}
+    \item \href{#method-xtdml-learner_names}{\code{xtdml$learner_names()}}
+    \item \href{#method-xtdml-params_names}{\code{xtdml$params_names()}}
+    \item \href{#method-xtdml-set_ml_nuisance_params}{\code{xtdml$set_ml_nuisance_params()}}
+    \item \href{#method-xtdml-get_params}{\code{xtdml$get_params()}}
+    \item \href{#method-xtdml-get_panel_info}{\code{xtdml$get_panel_info()}}
+    \item \href{#method-xtdml-clone}{\code{xtdml$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-xtdml-new"></a>}}
-\if{latex}{\out{\hypertarget{method-xtdml-new}{}}}
-\subsection{Method \code{new()}}{
-\code{xtdml} is an abstract class that can't be initialized.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$new()}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-xtdml-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-xtdml-initialize}{}}}
+\subsection{\code{xtdml$new()}}{
+  \code{xtdml} is an abstract class that can't be initialized.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$new()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-print"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-print}{}}}
-\subsection{Method \code{print()}}{
-Prints \code{xtdml} objects.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$print()}\if{html}{\out{</div>}}
+\subsection{\code{xtdml$print()}}{
+  Prints \code{xtdml} objects.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$print()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-fit"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-fit}{}}}
-\subsection{Method \code{fit()}}{
-Estimates model.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$fit(store_predictions = FALSE, store_models = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{store_predictions}}{(\code{logical(1)}) \cr
+\subsection{\code{xtdml$fit()}}{
+  Estimates model.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$fit(store_predictions = FALSE, store_models = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{store_predictions}}{(\code{logical(1)}) \cr
 Indicates whether the predictions for the nuisance functions should be
 stored in field \code{predictions}. Default is \code{FALSE}.}
-
-\item{\code{store_models}}{(\code{logical(1)}) \cr
+      \item{\code{store_models}}{(\code{logical(1)}) \cr
 Indicates whether the fitted models for the nuisance functions should be
 stored in field \code{models} if you want to analyze the models or extract
 information like variable importance. Default is \code{FALSE}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    self
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-self
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-split_samples"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-split_samples}{}}}
-\subsection{Method \code{split_samples()}}{
-Draws sample splitting for DML procedure.
+\subsection{\code{xtdml$split_samples()}}{
+  Draws sample splitting for DML procedure.
 
 The samples are drawn according to the attributes \code{n_folds}, \code{n_rep}
 and \code{apply_cross_fitting}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$split_samples()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$split_samples()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    self
+  }
 }
 
-\subsection{Returns}{
-self
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-tune"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-tune}{}}}
-\subsection{Method \code{tune()}}{
-Conducts hyperparameter tuning.
+\subsection{\code{xtdml$tune()}}{
+  Conducts hyperparameter tuning.
 
 The hyperparameter tuning is performed using the tuning methods provided
 in the \href{https://mlr3tuning.mlr-org.com/}{mlr3tuning} package.
 For more information on tuning in \href{https://mlr3.mlr-org.com/}{mlr3},
 see the chapter on hyperparameter optimization in the
 \href{https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html}{mlr3 book}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$tune(
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$tune(
   param_set,
   tune_settings = list(n_folds_tune = 5, rsmp_tune = mlr3::rsmp("cv", folds = 5), measure
     = NULL, terminator = mlr3tuning::trm("evals", n_evals = 20), tuner =
     mlr3tuning::tnr("grid_search", resolution = 10)),
   tune_on_folds = FALSE
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{param_set}}{(named \code{list()}) \cr
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{param_set}}{(named \code{list()}) \cr
 A named \code{list} with a parameter grid for each nuisance model/learner
 (see method \code{learner_names()}).
 Each element must be a \link[paradox:ParamSet]{ParamSet} object.}
-
-\item{\code{tune_settings}}{(named \code{list()}) \cr
+      \item{\code{tune_settings}}{(named \code{list()}) \cr
 A named \code{list()} of settings controlling the hyperparameter tuning process.
 Each entry is passed to the corresponding components from
 \href{https://mlr3tuning.mlr-org.com/}{mlr3tuning}:
@@ -261,52 +268,54 @@ process should stop (e.g., \code{trm("evals", n_evals = 20)}).
 (e.g., \code{tnr("grid_search")} or \code{tnr("random_search")}).
 If set to \code{"grid_search"}, then additional argument \code{"resolution"} is required.
 \item \code{rsmp_tune}  a \link[mlr3:Resampling]{Resampling} object or a key passed to
-\link[mlr3:mlr_sugar]{rsmp()}.
+\link[mlr3:rsmp]{rsmp()}.
 Defines the resampling strategy used during tuning (default: \code{"cv"}).
 \item \code{n_folds_tune} an integer scalar (optional).
 Number of folds used if \code{rsmp_tune = "cv"}. Default is \code{5}.
 \item \code{measure} a named \code{list()} (optional).
 Contains the performance measures used for tuning.
 Each element must be either a \link[mlr3:Measure]{Measure} object or a key to
-\link[mlr3:mlr_sugar]{msr()}.
+\link[mlr3:msr]{msr()}.
 Names must match the learner names (see \code{learner_names()}).
 If omitted, default measures are used (\code{"regr.rmse"} for regression and
 \code{"classif.ce"} for classification).
 }}
-
-\item{\code{tune_on_folds}}{(\code{logical(1)}) \cr
+      \item{\code{tune_on_folds}}{(\code{logical(1)}) \cr
 Indicates whether the tuning should be performed separately for each
 cross-fitting fold (\code{TRUE}) or globally across all folds (\code{FALSE}, default).}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    self
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-self
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-summary"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-summary}{}}}
-\subsection{Method \code{summary()}}{
-Summary for estimated model after calling \code{fit()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$summary(digits = max(3L, getOption("digits") - 3L))}\if{html}{\out{</div>}}
+\subsection{\code{xtdml$summary()}}{
+  Summary for estimated model after calling \code{fit()}.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$summary(digits = max(3L, getOption("digits") - 3L))}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{digits}}{(\code{integer(1)}) \cr
+The number of significant digits to use when printing.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{digits}}{(\code{integer(1)}) \cr
-The number of significant digits to use when printing.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-plot"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-plot}{}}}
-\subsection{Method \code{plot()}}{
-Plots nuisance-function diagnostics after calling
+\subsection{\code{xtdml$plot()}}{
+  Plots nuisance-function diagnostics after calling
 \code{fit(store_predictions = TRUE)}.
 
 Produces a 2x2 panel with the following diagnostic plots for each nuisance parameter:
@@ -319,207 +328,216 @@ Produces a 2x2 panel with the following diagnostic plots for each nuisance param
 
 For score \code{"orth-PO"}, the nuisance parameters are \code{l} and \code{m}.
 For score \code{"orth-IV"}, the nuisance parameters are \code{g} and \code{m}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$plot(i_rep = 1L, i_treat = 1L, ask = interactive(), title = NULL, ...)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{i_rep}}{(\code{integer(1)}) repetition index. Default \code{1L}.}
-
-\item{\code{i_treat}}{(\code{integer(1)}) treatment index. Default \code{1L}.}
-
-\item{\code{ask}}{(\code{logical(1)}) \cr
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$plot(i_rep = 1L, i_treat = 1L, ask = interactive(), title = NULL, ...)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{i_rep}}{(\code{integer(1)}) repetition index. Default \code{1L}.}
+      \item{\code{i_treat}}{(\code{integer(1)}) treatment index. Default \code{1L}.}
+      \item{\code{ask}}{(\code{logical(1)}) \cr
 Whether to ask before drawing the plot page. Default is \code{interactive()}.}
+      \item{\code{title}}{(\code{character()}) title of graph.}
+      \item{\code{...}}{additional graphical arguments passed to \code{plot()}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Invisibly returns \code{NULL}.
+  }
+}
 
-\item{\code{title}}{(\code{character()}) title of graph.}
-
-\item{\code{...}}{additional graphical arguments passed to \code{plot()}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly returns \code{NULL}.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-predict}{}}}
-\subsection{Method \code{predict()}}{
-Computes predicted outcomes for specified values of the treatment variable.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$predict(d)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{d}}{(\code{numeric()}) \cr
+\subsection{\code{xtdml$predict()}}{
+  Computes predicted outcomes for specified values of the treatment variable.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$predict(d)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{d}}{(\code{numeric()}) \cr
 Counterfactual treatment value. It can be can be a single value or a vector
 of multiple treatment levels.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-An \code{array()} of predicted outcomes with dimensions
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    An \code{array()} of predicted outcomes with dimensions
 \verb{(n_obs, n_d, n_rep, n_treat)}, where \code{n_d} is the number of treatment-value
 specifications.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-confint"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-confint}{}}}
-\subsection{Method \code{confint()}}{
-Confidence intervals for estimated model.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$confint(parm, joint = FALSE, level = 0.95)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{parm}}{(\code{numeric()} or \code{character()}) \cr
+\subsection{\code{xtdml$confint()}}{
+  Confidence intervals for estimated model.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$confint(parm, joint = FALSE, level = 0.95)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{parm}}{(\code{numeric()} or \code{character()}) \cr
 A specification of which parameters are to be given confidence intervals
 among the variables for which inference was done, either a vector of
 numbers or a vector of names. If missing, all parameters are considered
 (default).}
-
-\item{\code{joint}}{(\code{logical(1)}) \cr
+      \item{\code{joint}}{(\code{logical(1)}) \cr
 Indicates whether joint confidence intervals are computed.
 Default is \code{FALSE}.}
-
-\item{\code{level}}{(\code{numeric(1)}) \cr
+      \item{\code{level}}{(\code{numeric(1)}) \cr
 The confidence level. Default is \code{0.95}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A \code{matrix()} with the confidence interval(s).
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A \code{matrix()} with the confidence interval(s).
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-learner_names"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-learner_names}{}}}
-\subsection{Method \code{learner_names()}}{
-Returns the names of the learners.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$learner_names()}\if{html}{\out{</div>}}
+\subsection{\code{xtdml$learner_names()}}{
+  Returns the names of the learners.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$learner_names()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{character()} with names of learners.
+  }
 }
 
-\subsection{Returns}{
-\code{character()} with names of learners.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-params_names"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-params_names}{}}}
-\subsection{Method \code{params_names()}}{
-Returns the names of the nuisance models with hyperparameters.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$params_names()}\if{html}{\out{</div>}}
+\subsection{\code{xtdml$params_names()}}{
+  Returns the names of the nuisance models with hyperparameters.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$params_names()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{character()} with names of nuisance models with hyperparameters.
+  }
 }
 
-\subsection{Returns}{
-\code{character()} with names of nuisance models with hyperparameters.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-set_ml_nuisance_params"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-set_ml_nuisance_params}{}}}
-\subsection{Method \code{set_ml_nuisance_params()}}{
-Sets hyperparameters for the nuisance models of estimated model.
+\subsection{\code{xtdml$set_ml_nuisance_params()}}{
+  Sets hyperparameters for the nuisance models of estimated model.
 
 Note that in the current implementation, either all parameters have to
 be set globally or all parameters have to be provided fold-specific.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$set_ml_nuisance_params(
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$set_ml_nuisance_params(
   learner = NULL,
   treat_var = NULL,
   params,
   set_fold_specific = FALSE
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{learner}}{(\code{character(1)}) \cr
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{learner}}{(\code{character(1)}) \cr
 The nuisance model/learner (see method \code{params_names}).}
-
-\item{\code{treat_var}}{(\code{character(1)}) \cr
+      \item{\code{treat_var}}{(\code{character(1)}) \cr
 The treatment variAble (hyperparameters can be set treatment-variable
 specific).}
-
-\item{\code{params}}{(named \code{list()}) \cr
+      \item{\code{params}}{(named \code{list()}) \cr
 A named \code{list()} with estimator parameters for time-varying covariates. Parameters are used for all
 folds by default. Alternatively, parameters can be passed in a
 fold-specific way if option  \code{fold_specific}is \code{TRUE}. In this case, the
 outer list needs to be of length \code{n_rep} and the inner list of length
 \code{n_folds_per_cluster}.}
-
-\item{\code{set_fold_specific}}{(\code{logical(1)}) \cr
+      \item{\code{set_fold_specific}}{(\code{logical(1)}) \cr
 Indicates if the parameters passed in \code{params} should be passed in
 fold-specific way. Default is \code{FALSE}. If \code{TRUE}, the outer list needs
 to be of length \code{n_rep} and the inner list of length \code{n_folds_per_cluster}.
 Note that in the current implementation, either all parameters have to
 be set globally or all parameters have to be provided fold-specific.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    self
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-self
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-get_params"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-get_params}{}}}
-\subsection{Method \code{get_params()}}{
-Gets hyper-parameters for the nuisance model.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$get_params(learner)}\if{html}{\out{</div>}}
+\subsection{\code{xtdml$get_params()}}{
+  Gets hyper-parameters for the nuisance model.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$get_params(learner)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{learner}}{(\code{character(1)}) \cr
+The nuisance model/learner (see method \code{params_names()})}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    named \code{list()}with paramers for the nuisance model/learner.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{learner}}{(\code{character(1)}) \cr
-The nuisance model/learner (see method \code{params_names()})}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-named \code{list()}with paramers for the nuisance model/learner.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-get_panel_info"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-get_panel_info}{}}}
-\subsection{Method \code{get_panel_info()}}{
-Gets panel information for estimation models.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$get_panel_info()}\if{html}{\out{</div>}}
+\subsection{\code{xtdml$get_panel_info()}}{
+  Gets panel information for estimation models.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$get_panel_info()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    named \code{list()}with panel information for the model.
+  }
 }
 
-\subsection{Returns}{
-named \code{list()}with panel information for the model.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-xtdml-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-xtdml-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{xtdml$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{xtdml$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{xtdml$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

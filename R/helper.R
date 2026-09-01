@@ -325,7 +325,7 @@ set_default_measure = function(measure_in = NA, task_type) {
 }
 
 #' @export
-format.perc <- function(x, digits = 3, ...) {
+format.perc = function(x, digits = 3, ...) {
   paste0(formatC(100 * x, format = "f", digits = digits), "%")
 }
 
@@ -422,7 +422,7 @@ check_smpl_split = function(smpl, n_obs, check_intersect = FALSE) {
 }
 
 # remove NA from summation within outer()
-sum_na <- function(x) if(all(is.na(x))) NA else sum(x, na.rm = TRUE)
+sum_na = function(x) if(all(is.na(x))) NA else sum(x, na.rm = TRUE)
 
 ## Polynomial expansion (for Lasso with extensive dictionary)
 polyexp = function(df){
@@ -441,4 +441,68 @@ polyexp = function(df){
 
   names(df.polyexp) = colnames
   return(df.polyexp)
+}
+
+xtdml_check_time_structure = function(df, panel_id, time_id, approach) {
+
+  if (approach != "fd-exact") {
+    return(invisible(NULL))
+  }
+
+  # (a) No duplicate panel_id x time_id combinations
+  dup = df %>%
+    dplyr::count(dplyr::across(dplyr::all_of(c(panel_id, time_id))), name = "n") %>%
+    dplyr::filter(n > 1)
+
+  if (nrow(dup) > 0) {
+    bad_units = unique(dup[[panel_id]])
+    stop(
+      sprintf(
+        "Duplicate observations found for the same '%s' and '%s' in unit(s): %s.
+Each unit must have at most one observation per time period.",
+        panel_id, time_id, paste(utils::head(bad_units, 10), collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+
+  # (b) time_id must be strictly increasing within each unit (gaps of any size allowed)
+  gaps = df %>%
+    dplyr::arrange(dplyr::across(dplyr::all_of(c(panel_id, time_id)))) %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(panel_id))) %>%
+    dplyr::mutate(.time_gap = .data[[time_id]] - dplyr::lag(.data[[time_id]])) %>%
+    dplyr::ungroup()
+
+  bad_order = gaps %>% dplyr::filter(!is.na(.time_gap) & .time_gap <= 0)
+
+  if (nrow(bad_order) > 0) {
+    bad_units = unique(bad_order[[panel_id]])
+    stop(
+      sprintf(
+        "Non-increasing or duplicated time index detected for unit(s): %s.
+'%s' must be strictly increasing within each '%s'.",
+        paste(utils::head(bad_units, 10), collapse = ", "), time_id, panel_id
+      ),
+      call. = FALSE
+    )
+  }
+
+  # (c) Informational warning only -- irregular gaps are allowed, e.g. waves 1,3,5,7,8
+  observed_gaps = sort(unique(stats::na.omit(gaps$.time_gap)))
+
+  if (length(observed_gaps) > 1) {
+    warning(
+      sprintf(
+        "The time index '%s' has irregular spacing across observations (gap sizes observed: %s).
+        Under approach = \"fd-exact\", first differences are computed between each unit's consecutive
+        available observations, whatever the size of the gap between them (e.g., wave-to-wave differences
+        of unequal length are all treated as one \"period\"). If a constant per-period interpretation of
+        theta is required, either restrict the sample to a subset with uniform spacing, or use
+        approach = \"cre\" / \"wg-approx\", which do not rely on adjacent-period differencing.",
+        time_id, paste(observed_gaps, collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
 }
